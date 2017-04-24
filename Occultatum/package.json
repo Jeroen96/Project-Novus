@@ -1,0 +1,32 @@
+{
+  "name": "artifex",
+  "version": "1.0.0",
+  "description": "REST API and deployment server for Angular site",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jeroen96/Project-Novus.git"
+  },
+  "keywords": [
+    "Express",
+    "NodeJS",
+    "Angular"
+  ],
+  "author": "Jeroen_B",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Jeroen96/Project-Novus/issues"
+  },
+  "homepage": "https://github.com/Jeroen96/Project-Novus#readme",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "cors": "^2.8.3",
+    "eslint": "^3.19.0",
+    "express": "^4.15.2",
+    "jwt-simple": "^0.5.1",
+    "mysql": "^2.13.0"
+  }
+}
