@@ -1,7 +1,6 @@
 # Oculus *frontend*
 
-![alt text][logo]
-[logo]: http://www.masterangular.com/images/angular2typescript.png "Angular logo"
+![alt text](http://www.masterangular.com/images/angular2typescript.png)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0.
 
