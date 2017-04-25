@@ -1,0 +1,21 @@
+.app-content {
+  margin: 10px;
+}
+
+.kappa{
+  margin-top: 5px;
+}
+
+.app-sidebar-button {
+  width: inherit;
+}
+
+.app-menu-button {
+  padding: 0;
+  min-width: 50px;
+}
+
+.app-sidenav {
+  min-width: 200px;
+  height: 100vh;
+}

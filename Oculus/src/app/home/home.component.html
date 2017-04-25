@@ -1,0 +1,37 @@
+<md-sidenav-container style="height: 100vh">
+
+  <md-sidenav #sidenav mode="over" class="app-sidenav" color="primary">
+    <md-toolbar>
+      <span>Settings</span>
+    </md-toolbar>
+    <md-toolbar>
+      <span>Settings</span>
+    </md-toolbar>
+    
+  </md-sidenav>
+
+  <md-toolbar  class="toolbar" color="primary">
+    <button md-button class="app-menu-button" (click)="sidenav.toggle()">
+      <i class="material-icons">menu</i>
+    </button>
+    <span>Home</span>
+  </md-toolbar>
+
+  <div class="app-content">
+    <md-card>
+      <button md-icon-button>
+    <md-icon>help</md-icon>
+  </button>
+    </md-card>
+    <md-tab-group>
+      <md-tab label="Files">Hello World</md-tab>
+      <md-tab label="Apps">
+        <md-card class="kappa" *ngFor="let num of test">
+          <md-card-title>{{num}}</md-card-title>
+          <md-card-actions>
+            <button md-raised-button>Download</button>
+          </md-card-actions>
+        </md-card>
+      </md-tab>
+    </md-tab-group>
+  </div>
