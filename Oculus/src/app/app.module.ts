@@ -8,6 +8,7 @@ import 'hammerjs';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing/app-routing.module';
+import { WebApiService } from './web-api.service';
 import { HomeComponent } from './home/home.component';
 
 import { UserComponent } from './Energie-Monitor/user/user.component';
@@ -30,7 +31,7 @@ import { LoginComponent } from './Energie-Monitor/login/login.component';
     MaterialModule.forRoot(),
     AppRoutingModule,
   ],
-  providers: [],
+  providers: [WebApiService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

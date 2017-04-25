@@ -1,3 +1,4 @@
+import { WebApiService } from './../web-api.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -8,9 +9,10 @@ import { Component, OnInit } from '@angular/core';
 export class HomeComponent implements OnInit {
   public test: Array<any> = ['Simply hue', 'Planner', 'Energy monitor', 'test1', 'kappa'];
 
-  constructor() { }
+  constructor(private webApi: WebApiService) { }
 
   ngOnInit() {
+    this.webApi.updateRouteName('Home');
   }
 
 }
