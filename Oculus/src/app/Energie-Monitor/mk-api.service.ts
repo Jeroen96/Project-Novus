@@ -3,7 +3,7 @@ import { Http, Headers, RequestOptions } from '@angular/http';
 import 'rxjs/Rx';
 
 @Injectable()
-export class ApiService {
+export class MkApiService {
   private apiUrl = 'https://treepi.dynu.net/api/';
   private headers = new Headers({ 'Content-Type': 'application/json' });
   private accessToken = '';

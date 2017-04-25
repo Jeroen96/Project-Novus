@@ -10,7 +10,7 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/home' },
   { path: 'home', component: HomeComponent },
-  { path: 'em', pathMatch: 'full', redirectTo: '/em/login' },
+  { path: 'em', pathMatch: 'full', redirectTo: '/em/dashboard' },
   { path: 'em/login', component: LoginComponent },
   { path: 'em/dashboard', component: DashboardComponent },
   { path: 'em/dashboard/:id', component: UserComponent },

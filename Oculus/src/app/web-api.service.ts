@@ -10,6 +10,7 @@ export class WebApiService {
 
   updateRouteName(name: string) {
     this.routeName.next(name);
+    window.document.title = name;
   }
 
 }
