@@ -1,3 +1,51 @@
-<p>
-  user works!
-</p>
+<md-card>
+  <div fxLayout="row" fxLayoutAlign="start center">
+    <!--label + button block-->
+    <div>
+      <!--Username block-->
+      <div fxLayout="row" fxLayoutAlign="start center">
+        <div>
+          <md-card-title>User</md-card-title>
+        </div>
+        <div style="margin-left: 7px; margin-top:5px;">
+          <md-card-title *ngIf="userId == 1" style="font-size: 19px">Jeroen</md-card-title>
+        </div>
+      </div>
+      <!--button-->
+      <button md-raised-button (click)="clickBackButton()" color="primary">
+      <md-icon>keyboard_backspace</md-icon>
+      <label>Back</label>
+    </button>
+    </div>
+    <!--label block-->
+    <div fxLayout="column" fxLayoutAlign="center start" style="margin-left: 30px;">
+      <label>current usage: {{currentUsage}}W</label>
+      <label>power usage last 24h: {{kWh24h}}kWh</label>
+      <label>power costs last 24h: € {{costs24h}}</label>
+    </div>
+  </div>
+</md-card>
+
+
+
+<md-card class="chartCard">
+  <div *ngIf="lineChartDataHour.length > 0" class="chart">
+    <label>power usage of the last hour (W/min) </label>
+    <canvas baseChart [datasets]="lineChartDataHour" [labels]="lineChartLabelsHour" [options]="lineChartOptions" [legend]="lineChartLegend"
+      [chartType]="lineChartType" [colors]="lineChartColors"></canvas>
+  </div>
+</md-card>
+<md-card class="chartCard">
+  <div *ngIf="lineChartDataDay.length > 0" class="chart">
+    <label>power usage of the last 3 days (kWh) </label>
+    <canvas baseChart [datasets]="lineChartDataDay" [labels]="lineChartLabelsDay" [options]="lineChartOptions" [legend]="lineChartLegend"
+      [chartType]="lineChartType" [colors]="lineChartColors"></canvas>
+  </div>
+</md-card>
+<md-card class="chartCard">
+  <div *ngIf="lineChartDataTrend.length > 0" class="chart">
+    <label>Trend for the next 24 hours (kWh) </label>
+    <canvas baseChart [datasets]="lineChartDataTrend" [labels]="lineChartLabelTrend" [options]="lineChartOptions" [legend]="lineChartLegend"
+      [chartType]="lineChartType" [colors]="lineChartColors"></canvas>
+  </div>
+</md-card>

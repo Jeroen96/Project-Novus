@@ -2,6 +2,9 @@
 <md-sidenav-container style="height: 100vh">
   <md-sidenav #sidenav mode="over" class="app-sidenav" color="primary">
     <md-nav-list>
+      <!--'absorb' first button highlight-->
+      <a md-button style="height: 0; position: absolute;">
+      </a>
       <!--Home button-->
       <a md-list-item class="navItem" routerLink="/home" routerLinkActive="active">
         <md-icon>home</md-icon>
@@ -27,7 +30,7 @@
   </md-sidenav>
 
   <!--toolbar-->
-<md-toolbar class="toolbar" color="primary">
+  <md-toolbar class="toolbar" color="primary">
     <button md-button class="app-menu-button" (click)="sidenav.toggle()">
       <i class="material-icons">menu</i>
     </button>
@@ -36,4 +39,3 @@
 
 
   <router-outlet></router-outlet>
-  
