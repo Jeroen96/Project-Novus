@@ -14,10 +14,10 @@
       <md-divider></md-divider>
       <a md-list-item class="navItem" routerLink="/em" routerLinkActive="active">
         <md-icon>lightbulb_outline</md-icon>
-        <label class="navDes">Energie Monitor</label>
+        <label class="navDes">Energy Monitor</label>
       </a>
       <!--Downloads button-->
-      <a md-list-item class="navItem">
+      <a md-list-item class="navItem" routerLink="/downloads" routerLinkActive="active">
         <md-icon>file_download</md-icon>
         <label class="navDes">Downloads</label>
       </a>
@@ -30,12 +30,12 @@
   </md-sidenav>
 
   <!--toolbar-->
-  <md-toolbar class="toolbar" color="primary">
-    <button md-button class="app-menu-button" (click)="sidenav.toggle()">
+  <md-toolbar color="primary">
+    <button md-icon-button (click)="sidenav.toggle()">
       <i class="material-icons">menu</i>
     </button>
-    <span>{{route}}</span>
+    <label class="navDes">{{route}}</label>
   </md-toolbar>
 
-
   <router-outlet></router-outlet>
+  

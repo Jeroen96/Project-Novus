@@ -1,3 +1,4 @@
+import { DownloadsComponent } from './../downloads/downloads.component';
 import { UserComponent } from './../Energie-Monitor/user/user.component';
 import { DashboardComponent } from './../Energie-Monitor/dashboard/dashboard.component';
 import { LoginComponent } from './../Energie-Monitor/login/login.component';
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'em/login', component: LoginComponent },
   { path: 'em/dashboard', component: DashboardComponent },
   { path: 'em/dashboard/:id', component: UserComponent },
+  { path: 'downloads', component: DownloadsComponent },
 ];
 
 @NgModule({
