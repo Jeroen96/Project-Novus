@@ -6,7 +6,7 @@ var http = require('http');
 var https = require('https');
 var fs = require('fs');
 var mkApi = require('./mk_api');
-var webApi = require('./web_api');
+// var webApi = require('./web_api');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var app = express();
@@ -43,17 +43,19 @@ function wwwRedirect(req, res, next) {
 };
 
 app.use('/mkApi', mkApi);
-app.use('/api', webApi);
+// app.use('/api', webApi);
 
 app.get('/info', function (req, res) {
-    res.send('Welcome to treepi. This domain is used to host a Node.js® REST API for the meterkast project');
+    res.send('Welcome to treepi. This domain is used to host a Node.JS® REST api and Angular site');
 });
 
 // Serve angular app
 app.use(express.static(__dirname + '/dist/'));
-app.use('/login', express.static(__dirname + '/dist/'));
-app.use('/dashboard', express.static(__dirname + '/dist/'));
-app.use('/dashboard/*', express.static(__dirname + '/dist/'));
+app.use('/home', express.static(__dirname + '/dist/'));
+app.use('/em', express.static(__dirname + '/dist/'));
+app.use('/em/login', express.static(__dirname + '/dist/'));
+app.use('/em/dashboard', express.static(__dirname + '/dist/'));
+app.use('/em/dashboard/*', express.static(__dirname + '/dist/'));
 
 // SSL options for certificate
 var sslPath = '/etc/letsencrypt/live/treepi.dynu.net/';
@@ -64,5 +66,5 @@ var options = {
 
 http.createServer(app).listen(80);
 https.createServer(options, app).listen(443, function () {
-    console.log('Node Angular service listening on port 443');
+    console.log('Node server listening on port 80 and 443');
 });
