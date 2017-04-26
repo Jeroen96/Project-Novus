@@ -1,3 +1,41 @@
-<h1>
-  {{title}}
-</h1>
+<!--sidenav menu-->
+<md-sidenav-container style="height: 100vh">
+  <md-sidenav #sidenav mode="over" class="app-sidenav" color="primary">
+    <md-nav-list>
+      <!--'absorb' first button highlight-->
+      <a md-button style="height: 0; position: absolute;">
+      </a>
+      <!--Home button-->
+      <a md-list-item class="navItem" routerLink="/home" routerLinkActive="active">
+        <md-icon>home</md-icon>
+        <label class="navDes">Home</label>
+      </a>
+      <!--Energie monitor button-->
+      <md-divider></md-divider>
+      <a md-list-item class="navItem" routerLink="/em" routerLinkActive="active">
+        <md-icon>lightbulb_outline</md-icon>
+        <label class="navDes">Energie Monitor</label>
+      </a>
+      <!--Downloads button-->
+      <a md-list-item class="navItem">
+        <md-icon>file_download</md-icon>
+        <label class="navDes">Downloads</label>
+      </a>
+      <!--Admin button-->
+      <a md-list-item class="navItem">
+        <md-icon>settings_applications</md-icon>
+        <label class="navDes">Control panel</label>
+      </a>
+    </md-nav-list>
+  </md-sidenav>
+
+  <!--toolbar-->
+  <md-toolbar class="toolbar" color="primary">
+    <button md-button class="app-menu-button" (click)="sidenav.toggle()">
+      <i class="material-icons">menu</i>
+    </button>
+    <span>{{route}}</span>
+  </md-toolbar>
+
+
+  <router-outlet></router-outlet>

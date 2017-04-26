@@ -1,0 +1,13 @@
+h1{
+    font-family: 'Segoe UI';
+    color: #7f8c8d;
+}
+
+.controls{
+    margin-left: 20px;
+}
+
+.chart{
+    margin-top: 20px;
+    height: 450px;
+}
