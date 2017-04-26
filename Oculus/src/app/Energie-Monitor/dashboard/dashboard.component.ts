@@ -58,11 +58,11 @@ export class DashboardComponent implements OnInit {
     if (!this.mkApi.getAccessToken()) {
       this.router.navigate(['/em/login']);
     }
+    this.webApi.updateRouteName('Enery-M Dashboard');
     this.mkApi.getData('hour', 1).subscribe(res => {
       this.procesData(res.data);
       this.clickPulseToggle(this.togglePulse);
     });
-    this.webApi.updateRouteName('Enery-M Dashboard');
   }
 
   clickRefreshButton() {

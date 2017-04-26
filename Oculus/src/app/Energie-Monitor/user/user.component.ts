@@ -1,3 +1,4 @@
+import { WebApiService } from './../../web-api.service';
 import { MkApiService } from './../mk-api.service';
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
@@ -43,13 +44,14 @@ export class UserComponent implements OnInit {
     }
   ];
 
-  constructor(private apiService: MkApiService, private route: ActivatedRoute, private location: Location, private router: Router) { }
+  constructor(private apiService: MkApiService, private webapi: WebApiService, private route: ActivatedRoute, private location: Location, private router: Router) { }
 
   ngOnInit() {
     // Route Guard
     if (!this.apiService.getAccessToken()) {
       this.router.navigate(['/em/login']);
     }
+    this.webapi.updateRouteName('Energy-M User');
     // Get day data
     this.route.params.switchMap((params: Params) => this.apiService.getDataSingle('day', 3, +params['id'])).subscribe(json => {
       this.userId = json.data.userId;
