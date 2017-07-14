@@ -52,6 +52,7 @@ app.get('/info', function (req, res) {
 // Serve angular app
 app.use(express.static(__dirname + '/dist/'));
 app.use('/home', express.static(__dirname + '/dist/'));
+app.use('/downloads', express.static(__dirname + '/dist/'));
 app.use('/em', express.static(__dirname + '/dist/'));
 app.use('/em/login', express.static(__dirname + '/dist/'));
 app.use('/em/dashboard', express.static(__dirname + '/dist/'));
