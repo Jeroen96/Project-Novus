@@ -7,8 +7,6 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  public apps: Array<any> = ['App 1', 'App 2', 'App 3', 'App 4', 'App 5'];
-  public files: Array<any> = ['File 1', 'File 2', 'File 3', 'File 4', 'File 5'];
 
   constructor(private webApi: WebApiService) { }
 

@@ -1,0 +1,20 @@
+<div class="app-content">
+  <md-tab-group dynamicHeight="true">
+    <md-tab label="Files">
+      <md-card class="card" *ngFor="let file of files">
+        <md-card-title>{{file}}</md-card-title>
+        <md-card-actions>
+          <button md-raised-button>Download</button>
+        </md-card-actions>
+      </md-card>
+    </md-tab>
+    <md-tab label="Apps">
+      <md-card class="card" *ngFor="let app of apps">
+        <md-card-title>{{app}}</md-card-title>
+        <md-card-actions>
+          <button md-raised-button>Download</button>
+        </md-card-actions>
+      </md-card>
+    </md-tab>
+  </md-tab-group>
+</div>

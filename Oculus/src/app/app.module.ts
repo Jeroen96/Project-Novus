@@ -17,6 +17,7 @@ import { UserComponent } from './Energie-Monitor/user/user.component';
 import { DashboardComponent } from './Energie-Monitor/dashboard/dashboard.component';
 import { LoginComponent } from './Energie-Monitor/login/login.component';
 import { ChartsModule } from 'ng2-charts';
+import { DownloadsComponent } from './downloads/downloads.component';
 
 @NgModule({
   declarations: [
@@ -25,14 +26,15 @@ import { ChartsModule } from 'ng2-charts';
     LoginComponent,
     DashboardComponent,
     UserComponent,
+    DownloadsComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
     BrowserAnimationsModule,
-    MaterialModule.forRoot(),
-    FlexLayoutModule.forRoot(),
+    MaterialModule,
+    FlexLayoutModule,
     AppRoutingModule,
     ChartsModule,
   ],
