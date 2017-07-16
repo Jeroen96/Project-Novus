@@ -1,4 +1,4 @@
-import { MkApiService } from './Energie-Monitor/mk-api.service';
+import { LoginService } from './login/login.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -10,23 +10,26 @@ import 'hammerjs';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing/app-routing.module';
-import { WebApiService } from './web-api.service';
 import { HomeComponent } from './home/home.component';
+
+import { ApiService } from './api.service';
 
 import { UserComponent } from './Energie-Monitor/user/user.component';
 import { DashboardComponent } from './Energie-Monitor/dashboard/dashboard.component';
-import { LoginComponent } from './Energie-Monitor/login/login.component';
 import { ChartsModule } from 'ng2-charts';
 import { DownloadsComponent } from './downloads/downloads.component';
+import { LoginComponent } from './login/login.component';
+import { ControlPanelComponent } from './control-panel/control-panel.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    LoginComponent,
     DashboardComponent,
     UserComponent,
     DownloadsComponent,
+    LoginComponent,
+    ControlPanelComponent,
   ],
   imports: [
     BrowserModule,
@@ -38,7 +41,7 @@ import { DownloadsComponent } from './downloads/downloads.component';
     AppRoutingModule,
     ChartsModule,
   ],
-  providers: [WebApiService, MkApiService],
+  providers: [ApiService, LoginService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

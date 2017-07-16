@@ -1,0 +1,95 @@
+<md-tab-group dynamicHeight="true">
+  <md-tab label="Users" *ngIf="userRights > 2">
+    <div id="tab_content">
+      <h3>Admins</h3>
+      <md-card *ngFor="let admin of admins">
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <label fxFlex="130px" fxFlex.xs="50%">{{admin.username}}</label>
+          <div fxLayout.xs="column" fxLayoutAlign.xs fxLayoutGap.xs="10px" fxFlex.xs="50%">
+            <button md-raised-button id="rowItem" color="primary" (click)="openEditUserDialog(admin.username)">
+              <md-icon>edit</md-icon>
+              <label id="buttonLabel">Edit</label>
+            </button>
+            <button md-raised-button color="warn" id="rowItem" (click)="deleteUser(admin.username)">
+              <md-icon>delete</md-icon>
+              <label id="buttonLabel">Delete</label>
+            </button>
+          </div>
+        </div>
+      </md-card>
+      <h3>Users</h3>
+      <md-card *ngFor="let user of users">
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <label fxFlex="130px" fxFlex.xs="50%">{{user.username}}</label>
+          <div fxLayout.xs="column" fxLayoutGap.xs="10px" fxFlex.xs="50%">
+            <button md-raised-button id="rowItem" color="primary" (click)="openEditUserDialog(user.username)">
+              <md-icon>edit</md-icon>
+              <label id="buttonLabel">Edit</label>
+            </button>
+            <button md-raised-button color="warn" id="rowItem" (click)="deleteUser(user.username)">
+              <md-icon>delete</md-icon>
+              <label id="buttonLabel">Delete</label>
+            </button>
+          </div>
+        </div>
+      </md-card>
+      <h3>Viewers</h3>
+      <md-card *ngFor="let viewer of viewers">
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <label fxFlex="130px" fxFlex.xs="50%">{{viewer.username}}</label>
+          <div fxLayout.xs="column" fxLayoutGap.xs="10px" fxFlex.xs="50%">
+            <button md-raised-button id="rowItem" color="primary" (click)="openEditUserDialog(viewer.username)">
+              <md-icon>edit</md-icon>
+              <label id="buttonLabel">Edit</label>
+            </button>
+            <button md-raised-button color="warn" id="rowItem" (click)="deleteUser(viewer.username)">
+              <md-icon>delete</md-icon>
+              <label id="buttonLabel">Delete</label>
+            </button>
+          </div>
+        </div>
+      </md-card>
+    </div>
+  </md-tab>
+
+  <md-tab label="Pending users" *ngIf="userRights > 2">
+    <div *ngIf="pending.length == 0" class="emptyContainer" fxLayout="column" fxLayoutAlign="center center"
+         fxLayoutGap="10px">
+      <md-icon class="emptyIcon">error</md-icon>
+      <label>There is nothing here</label>
+    </div>
+    <div id="tab_content">
+      <md-card *ngFor="let pending of pending">
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <label fxFlex="130px" fxFlex.xs="50%">{{pending.username}}</label>
+          <div fxLayout.xs="column" fxLayoutGap.xs="10px" fxFlex.xs="50%">
+            <md-select id="rowItem" placeholder="User rights" [(ngModel)]="pending.role">
+              <md-option *ngFor="let right of rights" [value]="right.userValue"> {{right.userReadValue}}</md-option>
+            </md-select>
+            <!--Phone button-->
+            <button fxHide fxShow.xs md-raised-button id="rowItem" color="primary"
+                    (click)="acceptUser(pending.username,pending.role)">
+              <md-icon>check</md-icon>
+              <label id="buttonLabel">Accept</label>
+            </button>
+            <!--Desktop button-->
+            <button md-icon-button fxHide.xs color="primary" id="rowItem"
+                    (click)="acceptUser(pending.username,pending.role)" mdTooltip="Accept User">
+              <md-icon>check</md-icon>
+            </button>
+            <!--Phone button-->
+            <button fxHide fxShow.xs md-raised-button color="warn" id="rowItem" (click)="declineUser(pending.username)">
+              <md-icon>clear</md-icon>
+              <label id="buttonLabel">Decline</label>
+            </button>
+            <!--Desktop button-->
+            <button md-icon-button fxHide.xs color="warn" id="rowItem" (click)="declineUser(pending.username)"
+                    mdTooltip="Decline User">
+              <md-icon>clear</md-icon>
+            </button>
+          </div>
+        </div>
+      </md-card>
+    </div>
+  </md-tab>
+</md-tab-group>

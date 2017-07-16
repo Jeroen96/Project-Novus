@@ -1,4 +1,5 @@
-import { WebApiService } from './../web-api.service';
+import { NavbarService } from './../navbar.service';
+import { ApiService } from './../api.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -10,10 +11,10 @@ export class DownloadsComponent implements OnInit {
   public apps: Array<any> = ['App 1', 'App 2', 'App 3', 'App 4', 'App 5'];
   public files: Array<any> = ['File 1', 'File 2', 'File 3', 'File 4', 'File 5'];
 
-  constructor(private webApi: WebApiService) { }
+  constructor(private nav: NavbarService) { }
 
   ngOnInit() {
-    this.webApi.updateRouteName('Downloads');
+    this.nav.setName('Downloads');
   }
 
 }

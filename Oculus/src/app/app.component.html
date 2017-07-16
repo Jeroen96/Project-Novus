@@ -21,21 +21,23 @@
         <md-icon>file_download</md-icon>
         <label class="navDes">Downloads</label>
       </a>
-      <!--Admin button-->
-      <a md-list-item class="navItem" (click)="sidenav.close()">
+      <!--ControlPanel button-->
+      <a md-list-item class="navItem" routerLink="/controlPanel" routerLinkActive="active" (click)="sidenav.close()">
         <md-icon>settings_applications</md-icon>
-        <label class="navDes">Control panel</label>
+        <label class="navDes">Control Panel</label>
+
       </a>
     </md-nav-list>
   </md-sidenav>
 
   <!--toolbar-->
-  <md-toolbar color="primary">
-    <button md-icon-button (click)="sidenav.toggle()">
-      <i class="material-icons">menu</i>
+  <div *ngIf="nav.visible">
+    <md-toolbar color="primary">
+      <button md-icon-button (click)="sidenav.toggle()">
+      <md-icon>menu</md-icon>
     </button>
-    <label class="navDes">{{route}}</label>
-  </md-toolbar>
+      <label class="navDes">{{route}}</label>
+    </md-toolbar>
+  </div>
 
   <router-outlet></router-outlet>
-  

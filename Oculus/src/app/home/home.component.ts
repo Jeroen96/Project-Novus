@@ -1,4 +1,5 @@
-import { WebApiService } from './../web-api.service';
+import { NavbarService } from './../navbar.service';
+import { ApiService } from './../api.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -8,10 +9,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private webApi: WebApiService) { }
+  constructor(private api: NavbarService) { }
 
   ngOnInit() {
-    this.webApi.updateRouteName('Home');
+    this.api.setName('Home');
   }
 
 }

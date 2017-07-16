@@ -1,0 +1,45 @@
+.container{
+    height: 100vh;
+}
+
+.card{
+    min-width: 400px;
+    min-height: 450px;
+}
+
+md-card-title{
+    margin-bottom: 30px;
+    font-family: "Roboto";
+}
+
+md-input-container{
+  width: 100%;
+  font-family: "Roboto";
+}
+
+/*md-icon svg {*/
+    /*fill: inherit;*/
+/*}*/
+
+.xsContainer{
+    height: 100vh;
+    /*background: white;*/
+}
+
+.xsCard{
+    margin: 20px;
+}
+
+#logo{
+    width: 47px;
+    height: 47px;
+    font-size: 47px;
+    margin: 1px;
+    margin-bottom: 15px;
+    margin-top: 20px;
+    /*color:#757575;*/
+}
+
+label{
+    margin-left: 20px;
+}
