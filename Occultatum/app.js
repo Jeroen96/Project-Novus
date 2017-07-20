@@ -1,18 +1,16 @@
-/**
- * Created by Jeroen_B on 24-4-2017.
- */
 var express = require('express');
 var http = require('http');
 var https = require('https');
 var fs = require('fs');
+var userApi = require('./user_api');
 var mkApi = require('./mk_api');
 // var webApi = require('./web_api');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var app = express();
 
-var settings = require('./config.json');
-app.set('secretkey', settings.secretkey);
+var config = require('./config.json');
+app.set('config', config);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -20,17 +18,17 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Redirect from http to https
-app.enable('trust proxy');
-app.all('*', checkSecure);
-function checkSecure(req, res, next) {
-    if (req.secure) {
-        // request was via https, so do no special handling
-        next();
-    } else {
-        // request was via http, so redirect to https
-        res.redirect('https://' + req.headers.host + req.url);
-    }
-};
+// app.enable('trust proxy');
+// app.all('*', checkSecure);
+// function checkSecure(req, res, next) {
+//     if (req.secure) {
+//         // request was via https, so do no special handling
+//         next();
+//     } else {
+//         // request was via http, so redirect to https
+//         res.redirect('https://' + req.headers.host + req.url);
+//     }
+// };
 
 // Redirect from www to naked
 app.use(wwwRedirect);
@@ -42,6 +40,7 @@ function wwwRedirect(req, res, next) {
     next();
 };
 
+app.use('/userApi', userApi);
 app.use('/mkApi', mkApi);
 // app.use('/api', webApi);
 
@@ -59,13 +58,15 @@ app.use('/em/dashboard', express.static(__dirname + '/dist/'));
 app.use('/em/dashboard/*', express.static(__dirname + '/dist/'));
 
 // SSL options for certificate
-var sslPath = '/etc/letsencrypt/live/treepi.dynu.net/';
-var options = {
-    key: fs.readFileSync(sslPath + 'privkey.pem'),
-    cert: fs.readFileSync(sslPath + 'fullchain.pem')
-};
+// var sslPath = '/etc/letsencrypt/live/treepi.dynu.net/';
+// var options = {
+//     key: fs.readFileSync(sslPath + 'privkey.pem'),
+//     cert: fs.readFileSync(sslPath + 'fullchain.pem')
+// };
 
-http.createServer(app).listen(80);
-https.createServer(options, app).listen(443, function () {
-    console.log('Node server listening on port 80 and 443');
+http.createServer(app).listen(80, function () {
+    console.log('Node server listening on port 80');
 });
+// https.createServer(options, app).listen(443, function () {
+//     console.log('Node server listening on port 80 and 443');
+// });

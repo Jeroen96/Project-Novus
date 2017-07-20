@@ -1,6 +1,3 @@
-/**
- * Created by Jeroen on 24-4-2017.
- */
 var express = require('express');
 var router = express.Router();
 var jwt = require('jwt-simple');
@@ -74,69 +71,7 @@ function stuurMeetwaarden(gebruikersnaam, waarde) {
     });
 }
 
-// Alle endpoint behalve /api/login require Access-Token
-router.all(new RegExp('[^(\/login)]'), function (req, res, next) {
 
-    // For all the others
-    var token = (req.header('Access-Token')) || '';
-    if (token) {
-        try {
-            var decoded = jwt.decode(token, req.app.get('secretkey'));
-
-            var receivedUsername = decoded.iss;
-            var userName = '';
-
-            var connection = mysql.createConnection({
-                host: 'localhost',
-                user: 'api',
-                password: 'Kappa1234!',
-                database: 'meterkast'
-            });
-
-            connection.connect(function (err) {
-                if (err) {
-                    console.log('error connecting: ' + err.stack);
-                    return;
-                }
-            });
-
-            var query = 'SELECT * FROM gebruiker WHERE gebruikersnaam = ?';
-            connection.query(query, [receivedUsername], function (err, results, fields) {
-                if (err) {
-                    console.log(err);
-                    return;
-                }
-                userName = results[0].gebruikersnaam;
-
-                if (decoded.iss === userName) {
-                    req.app.set('userid', decoded.iss);
-                    return next();
-                }
-                else {
-                    res.status(401);
-                    res.json({
-                        'status': 401, 'message': 'unknown user, bye'
-                    });
-                }
-            });
-            connection.end(function (err) {
-            });
-        }
-        catch (err) {
-            console.log('Authorization failed: ' + err);
-            res.status(401);
-            res.json({
-                'status': 401, 'message': 'unknown user, bye'
-            });
-        }
-    }
-    else {
-        res.status(401);
-        res.json({
-            'status': 401, 'message': 'unknown user, bye'
-        });
-    }
-});
 
 // Restfull login
 router.post('/login', function (req, res) {
