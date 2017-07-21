@@ -88,7 +88,7 @@ router.post('/login', function (req, res) {
                     res.json({ 'token': token });
                 } else {
                     res.status(401);
-                    res.json('Authorisation failed');
+                    res.json('Authorisation failed: invalid password.');
                 }
             });
         } else {
@@ -99,69 +99,43 @@ router.post('/login', function (req, res) {
     connection.end();
 });
 
-// TODO: Add token checking middleware after this line
+// Check on all api calls past this one for a valid jwt token
+router.all('*', function (req, res, next) {
+    var connection = connectToDb(req);
+    var token = (req.header('Acces-token') || '');
+    if (token) {
+        try {
+            var decoded = jwt.decode(token, req.app.get('config').jwtKey);
+            // TODO: Add token exp check etc.. as well
+            // Check if jwt iss exists in database
+            decodedIss = decoded.iss;
+            decodedUsr = decoded.usr;
 
-// // add user to pending table
-// var query = 'SELECT * FROM users WHERE username = ?';
-// connection.query(query, [receivedUsername], function (err, results, fields) {
-//     if (err) {
-//         console.log(err);
-//         return;
-//     }
-//     res.send(results);
-// });
-// connection.end(function () { });
-// });
+            var query = 'SELECT * FROM users WHERE username = ?';
+            connection.query(query, [decodedIss], function (err, results) {
+                // If name from token exists in db do..
+                if (results.length > 0) {
+                    req.app.set('iss', decodedIss);
+                    req.app.set('usr', decodedUsr);
+                    next();
+                } else {
+                    res.status(401);
+                    res.json('Acces denied. User unknown');
+                }
+            });
+        } catch (err) {
+            res.status(400);
+            res.json('Authorization failed. ' + err);
+        }
+    } else {
+        res.status(400);
+        res.send('No token supplied for the Acces-token header');
+    }
+    connection.end();
+});
 
-
-// Alle endpoint behalve /userApi/login require Access-Token
-// router.all(new RegExp('[^(\/login)]'), function (req, res, next) {
-//     var token = (req.header('Access-Token')) || '';
-//     if (token) {
-//         try {
-//             // Decode jwt and fetch the requester's username
-//             var decoded = jwt.decode(token, req.app.get('config').jwtKey);
-//             var receivedUsername = decoded.iss;
-//             var userName = '';
-//             // create database connetion
-//             var connection = connectDb(req);
-
-//             var query = 'SELECT * FROM gebruiker WHERE gebruikersnaam = ?';
-//             connection.query(query, [receivedUsername], function (err, results, fields) {
-//                 if (err) {
-//                     console.log(err);
-//                     return;
-//                 }
-//                 userName = results[0].gebruikersnaam;
-
-//                 if (decoded.iss === userName) {
-//                     req.app.set('userid', decoded.iss);
-//                     return next();
-//                 }
-//                 else {
-//                     res.status(401);
-//                     res.json({
-//                         'status': 401, 'message': 'unknown user, bye'
-//                     });
-//                 }
-//             });
-//             connection.end(function (err) {
-//             });
-//         }
-//         catch (err) {
-//             console.log('Authorization failed: ' + err);
-//             res.status(401);
-//             res.json({
-//                 'status': 401, 'message': 'unknown user, bye'
-//             });
-//         }
-//     }
-//     else {
-//         res.status(401);
-//         res.json({
-//             'status': 401, 'message': 'unknown user, bye'
-//         });
-//     }
-// });
+router.get('/test', function (req, res) {
+    res.send('Hello World!');
+});
 
 module.exports = router;
