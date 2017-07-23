@@ -31,7 +31,6 @@ router.post('/createAccount', function (req, res) {
     var connection = connectToDb(req);
     bcrypt.hash(password, req.app.get('config').saltRounds, function (err, passwordHash) {
         // Insert name and hashed password into pending table when username is available
-        console.log(passwordHash);
         var query = 'INSERT INTO pending (username, password) SELECT * FROM (SELECT ?,?) as tmp '
             + 'WHERE NOT EXISTS (SELECT username FROM pending WHERE username = ? UNION SELECT username from users WHERE username = ?)';
         connection.query(query, [username, passwordHash, username, username], function (err, results) {
@@ -39,7 +38,6 @@ router.post('/createAccount', function (req, res) {
                 console.log(err);
                 res.status(500);
                 res.json('An error occured');
-                connection.end();
                 return;
             }
             if (results.affectedRows > 0) {
@@ -70,7 +68,6 @@ router.post('/login', function (req, res) {
         if (err) {
             res.status(500);
             res.json('An error occured');
-            connection.end();
             return;
         }
         // If given username exists in db check password hash with given password
@@ -101,6 +98,9 @@ router.post('/login', function (req, res) {
 
 // Check on all api calls past this one for a valid jwt token
 router.all('*', function (req, res, next) {
+    // Array of all routes that require admin rights
+    var adminRoutes = ['/updatePending', '/test'];
+
     var connection = connectToDb(req);
     var token = (req.header('Acces-token') || '');
     if (token) {
@@ -109,14 +109,29 @@ router.all('*', function (req, res, next) {
             // TODO: Add token exp check etc.. as well
             // Check if jwt iss exists in database
             decodedIss = decoded.iss;
-            decodedUsr = decoded.usr;
 
             var query = 'SELECT * FROM users WHERE username = ?';
             connection.query(query, [decodedIss], function (err, results) {
+                if (err) {
+                    res.status(500);
+                    res.json('An error occured');
+                    return;
+                }
                 // If name from token exists in db do..
                 if (results.length > 0) {
                     req.app.set('iss', decodedIss);
-                    req.app.set('usr', decodedUsr);
+                    req.app.set('usr', results[0].userRights);
+                    // Check if user tries to acces admin routes if it is no admin
+                    if (results[0].userRights < 1) {
+                        for (var i = 0; i < adminRoutes.length; i++) {
+                            // If path contains one of the admin routes break call to next()
+                            if (req.path.includes(adminRoutes[i])) {
+                                res.status(403);
+                                res.json('requested path is forbidden');
+                                return;
+                            }
+                        }
+                    }
                     next();
                 } else {
                     res.status(401);
@@ -132,6 +147,73 @@ router.all('*', function (req, res, next) {
         res.send('No token supplied for the Acces-token header');
     }
     connection.end();
+});
+
+// {username: 'string' ,"accepted": 'boolean', "userRights": "int"}
+router.post('/updatePending', function (req, res) {
+    var username = req.body.username;
+    var accepted = req.body.accepted;
+    var userRights = req.body.userRights;
+    // Check if accepted && username is defined.
+    if (accepted === '' || accepted === undefined || username === '' || username === undefined) {
+        res.status(400);
+        res.json({ error: 'accepted and/or username is/are empty or missing. userRights: (0-1) is also required when accepted = true' });
+        return;
+    }
+    // Check if requested username exists in database
+    var connec = connectToDb(req);
+    var _query = 'SELECT * FROM pending where username = ?';
+    connec.query(_query, [username], function (err, results) {
+        // If no usernames are found, exit.
+        if (results.length < 1) {
+            res.status(400);
+            res.json("Entered pending username doesn't exist");
+            return;
+        }
+        // If accepted is true, check for userRights key
+        if (accepted) {
+            if (userRights === '' || userRights === undefined) {
+                res.status(400);
+                res.json({ error: 'userRights is empty or missing. userRights: (0-1) is required for accepted = true' });
+                return;
+            }
+            // check userRights for accepted values
+            if (userRights >= 0 && userRights <= 1) {
+                var connection = connectToDb(req);
+                var query = 'INSERT INTO users(username, password, userRights) VALUES ((SELECT username FROM pending WHERE username = ?),(SELECT password FROM pending WHERE username = ?),?);'
+                    + 'DELETE FROM pending WHERE username = ?;';
+                connection.query(query, [username, username, userRights, username], function (err) {
+                    if (err) {
+                        res.status(500);
+                        res.json('An error occured' + err);
+                        return;
+                    }
+                    res.status(200);
+                    res.json('Pending updated to user succesfully');
+                });
+                connection.end();
+            } else {
+                res.status(400);
+                res.json('invalid userRights value. Accepted values are 0 and 1.');
+                return;
+            }
+        } else {
+            // Accepted is false so userRights are not required. Delete user from pending table.
+            var connection2 = connectToDb(req);
+            var query2 = 'DELETE FROM pending WHERE username = ?';
+            connection2.query(query2, [username], function (err) {
+                if (err) {
+                    res.status(500);
+                    res.json('An error occured');
+                    return;
+                }
+                res.status(200);
+                res.json('Pending user deleted succesfully');
+            });
+            connection2.end();
+        }
+    });
+    connec.end();
 });
 
 router.get('/test', function (req, res) {
