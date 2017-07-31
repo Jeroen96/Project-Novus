@@ -1,16 +1,17 @@
 import { Subject } from 'rxjs/Subject';
 import { Injectable } from '@angular/core';
+import { Title } from '@angular/platform-browser'
 
 @Injectable()
 export class NavbarService {
   visible: boolean;
   public routeName: Subject<string> = new Subject<string>();
 
-  constructor() { this.visible = true; }
+  constructor(private titleService: Title) { this.visible = true; }
 
   setName(name: string) {
     this.routeName.next(name);
-    window.document.title = name;
+    this.titleService.setTitle(name);
   }
 
   hide() { this.visible = false; }

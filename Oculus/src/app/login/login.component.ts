@@ -1,3 +1,5 @@
+import { CreateUserDialogComponent } from './create-user-dialog/create-user-dialog.component';
+import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 import { NavbarService } from './../navbar.service';
 import { Router } from '@angular/router';
 import { ApiService } from './../api.service';
@@ -36,10 +38,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   openAboutDialog() {
-    // const dialogRef = this.dialog.open(AboutDialogComponent);
+    const dialogRef = this.dialog.open(AboutDialogComponent);
   }
 
   openCreateDialog() {
-    // const dialogRef = this.dialog.open(CreateUserDialogComponent);
+    const dialogRef = this.dialog.open(CreateUserDialogComponent);
   }
 }

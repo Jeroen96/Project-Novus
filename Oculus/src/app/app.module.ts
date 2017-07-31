@@ -1,3 +1,5 @@
+import { CreateUserDialogComponent } from './login/create-user-dialog/create-user-dialog.component';
+import { AboutDialogComponent } from './login/about-dialog/about-dialog.component';
 import { LoginService } from './login/login.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -30,6 +32,8 @@ import { ControlPanelComponent } from './control-panel/control-panel.component';
     DownloadsComponent,
     LoginComponent,
     ControlPanelComponent,
+    AboutDialogComponent,
+    CreateUserDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +46,8 @@ import { ControlPanelComponent } from './control-panel/control-panel.component';
     ChartsModule,
   ],
   providers: [ApiService, LoginService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [CreateUserDialogComponent, AboutDialogComponent]
 })
 export class AppModule {
 }

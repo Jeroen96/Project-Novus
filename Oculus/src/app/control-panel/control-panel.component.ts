@@ -19,6 +19,7 @@ export class ControlPanelComponent implements OnInit {
   admins = [];
   pending = [];
 
+  // tslint:disable-next-line:max-line-length
   constructor(private api: ApiService, private nav: NavbarService, private loginService: LoginService, private dialog: MdDialog, private snackbar: MdSnackBar) {
     nav.setName('Control Panel');
   }

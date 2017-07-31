@@ -1,0 +1,16 @@
+body{
+    font-family: Roboto;
+}
+
+p{
+    max-width: 350px;
+    font-size: 14px;
+}
+
+label{
+    margin-left: 20px;
+}
+
+button{
+    margin-top: 25px;
+}
