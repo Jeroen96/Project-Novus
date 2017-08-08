@@ -22,7 +22,7 @@ router.post('/createAccount', function (req, res) {
     var username = req.body.username;
     var password = req.body.password;
     // Check if username and password are both available
-    if (username === '' || username === undefined || password === '' || password === undefined) {
+    if (!username || !password) {
         res.status(400);
         res.json({ error: 'username and or password is/are empty or missing!' });
         return;
@@ -57,7 +57,7 @@ router.post('/login', function (req, res) {
     var username = req.body.username;
     var password = req.body.password;
     // Check if username and password are both available
-    if (username === '' || username === undefined || password === '' || password === undefined) {
+    if (!username || !password) {
         res.status(400);
         res.json({ error: 'username and or password is/are empty or missing!' });
         return;
@@ -100,6 +100,7 @@ router.post('/login', function (req, res) {
 router.all('*', function (req, res, next) {
     // Array of all routes that require admin rights
     var adminRoutes = ['/updatePending', '/test'];
+    var adminLevel = 2;
 
     var connection = connectToDb(req);
     var token = (req.header('Acces-token') || '');
@@ -122,7 +123,7 @@ router.all('*', function (req, res, next) {
                     req.app.set('iss', decodedIss);
                     req.app.set('usr', results[0].userRights);
                     // Check if user tries to acces admin routes if it is no admin
-                    if (results[0].userRights < 1) {
+                    if (results[0].userRights < adminLevel) {
                         for (var i = 0; i < adminRoutes.length; i++) {
                             // If path contains one of the admin routes break call to next()
                             if (req.path.includes(adminRoutes[i])) {
@@ -150,14 +151,14 @@ router.all('*', function (req, res, next) {
 });
 
 // {username: 'string' ,"accepted": 'boolean', "userRights": "int"}
-router.post('/updatePending', function (req, res) {
+router.put('/updatePending', function (req, res) {
     var username = req.body.username;
     var accepted = req.body.accepted;
     var userRights = req.body.userRights;
     // Check if accepted && username is defined.
-    if (accepted === '' || accepted === undefined || username === '' || username === undefined) {
+    if (!accepted || !username) {
         res.status(400);
-        res.json({ error: 'accepted and/or username is/are empty or missing. userRights: (0-1) is also required when accepted = true' });
+        res.json({ error: 'accepted and/or username is/are empty or missing. userRights: (1-2) is also required when accepted = true' });
         return;
     }
     // Check if requested username exists in database
@@ -172,13 +173,13 @@ router.post('/updatePending', function (req, res) {
         }
         // If accepted is true, check for userRights key
         if (accepted) {
-            if (userRights === '' || userRights === undefined) {
+            if (!userRights) {
                 res.status(400);
-                res.json({ error: 'userRights is empty or missing. userRights: (0-1) is required for accepted = true' });
+                res.json({ error: 'userRights is empty or missing. userRights: (1-2) is required for accepted = true' });
                 return;
             }
             // check userRights for accepted values
-            if (userRights >= 0 && userRights <= 1) {
+            if (userRights >= 1 && userRights <= 2) {
                 var connection = connectToDb(req);
                 var query = 'INSERT INTO users(username, password, userRights) VALUES ((SELECT username FROM pending WHERE username = ?),(SELECT password FROM pending WHERE username = ?),?);'
                     + 'DELETE FROM pending WHERE username = ?;';
@@ -194,7 +195,7 @@ router.post('/updatePending', function (req, res) {
                 connection.end();
             } else {
                 res.status(400);
-                res.json('invalid userRights value. Accepted values are 0 and 1.');
+                res.json('invalid userRights value. Accepted values are 1 and 2.');
                 return;
             }
         } else {
@@ -216,8 +217,61 @@ router.post('/updatePending', function (req, res) {
     connec.end();
 });
 
-router.get('/test', function (req, res) {
-    res.send('Hello World!');
+// Body: {username: 'string',newPassword: 'string', newUserRights: number}
+router.put('/updateUser', function (req, res) {
+    // At least on of the two 'new' keys is required. Both available is also possible.
+    var username = req.body.username;
+    var deleted = req.body.delete;
+    var newPassword = req.body.newPassword;
+    var newUserRights = req.body.newUserRights;
+    // Check is username is available and if at least one of the new keys is as well.
+    if (!username || (!newPassword && !newUserRights)) {
+        res.status(400);
+        res.json({
+            error: 'username and/or newPassword or newUserRights is/are empty or missing.'
+            + ' At least one new key is required.'
+        });
+        return;
+    }
+    //Check if newUserRights values are allowed
+    if (newUserRights < 1 || newUserRights > 2) {
+        res.status(400).json({ error: 'newUserRights value is not permitted. Allowed values are 1-2' });
+        return;
+    }
+    var connection = connectToDb(req);
+    var query;
+    var queryValues;
+    if (deleted) {
+        query = 'DELETE FROM users WHERE username = ?';
+        queryValues = [username];
+    }
+    else if (newPassword && newUserRights) {
+        query = 'UPDATE users SET password = ?, userRights = ? WHERE username = ?';
+        var hash = bcrypt.hashSync(newPassword, req.app.get('config').saltRounds);
+        queryValues = [hash, newUserRights, username];
+    } else if (newPassword) {
+        query = 'UPDATE users SET password = ? WHERE username = ?';
+        var hash2 = bcrypt.hashSync(newPassword, req.app.get('config').saltRounds);
+        queryValues = [hash2, username];
+    } else if (newUserRights) {
+        query = 'UPDATE users SET userRights = ? WHERE username = ?';
+        queryValues = [newUserRights, username];
+    }
+
+    connection.query(query, queryValues, function (err, results) {
+        if (err) {
+            res.status(500);
+            res.json('An error occured');
+            return;
+        }
+        if (results.affectedRows < 1) {
+            res.status(400).json('Updated user does not exist');
+
+        } else {
+            res.status(200).json('User updated succesfully');
+        }
+    });
+    connection.end();
 });
 
 module.exports = router;

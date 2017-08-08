@@ -4,9 +4,11 @@ var https = require('https');
 var fs = require('fs');
 var userApi = require('./user_api');
 var mkApi = require('./mk_api');
-// var webApi = require('./web_api');
+var webApi = require('./web_api');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+var helmet = require('helmet');
+var compression = require('compression');
 var app = express();
 
 var config = require('./config.json');
@@ -15,7 +17,9 @@ app.set('config', config);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+app.use(compression());
 app.use(cors());
+app.use(helmet());
 
 // Redirect from http to https
 // app.enable('trust proxy');
@@ -41,11 +45,11 @@ function wwwRedirect(req, res, next) {
 };
 
 app.use('/userApi', userApi);
-app.use('/mkApi', mkApi);
-// app.use('/api', webApi);
+// app.use('/mkApi', mkApi);
+app.use('/api', webApi);
 
 app.get('/info', function (req, res) {
-    res.send('Welcome to treepi. This domain is used to host a Node.JS® REST api and Angular site');
+    res.send('Welcome to jberk.nl. This domain is used to host a Node.JS® REST api and Angular site');
 });
 
 // Serve angular app

@@ -1,338 +1,338 @@
-var express = require('express');
-var router = express.Router();
-var jwt = require('jwt-simple');
-var mysql = require('mysql');
+// var express = require('express');
+// var router = express.Router();
+// var jwt = require('jwt-simple');
+// var mysql = require('mysql');
 
 
-var pulsen = createJson();
+// var pulsen = createJson();
 
 
-function createJson() {
-    var jsonObject = [];
+// function createJson() {
+//     var jsonObject = [];
 
-    var jeroenObject = {
-        gebruikersnaam: 'Jeroen',
-        pulsen: 0
-    };
+//     var jeroenObject = {
+//         gebruikersnaam: 'Jeroen',
+//         pulsen: 0
+//     };
 
-    jsonObject.push(jeroenObject);
-    return jsonObject;
-};
+//     jsonObject.push(jeroenObject);
+//     return jsonObject;
+// };
 
-interval = setInterval(function () {
-    var huidigepulsen = JSON.parse(JSON.stringify(pulsen));
+// interval = setInterval(function () {
+//     var huidigepulsen = JSON.parse(JSON.stringify(pulsen));
 
-    for (var idx = 0; idx < pulsen.length; idx++) {
-        pulsen[idx].pulsen = 0;
-    }
+//     for (var idx = 0; idx < pulsen.length; idx++) {
+//         pulsen[idx].pulsen = 0;
+//     }
 
-    for (var idy = 0; idy < huidigepulsen.length; idy++) {
-        stuurMeetwaarden(huidigepulsen[idy].gebruikersnaam, huidigepulsen[idy].pulsen);
-    }
+//     for (var idy = 0; idy < huidigepulsen.length; idy++) {
+//         stuurMeetwaarden(huidigepulsen[idy].gebruikersnaam, huidigepulsen[idy].pulsen);
+//     }
 
-}, 60000);
+// }, 60000);
 
-function stuurMeetwaarden(gebruikersnaam, waarde) {
-    var tijdstip = new Date();
-    var userid = -1;
+// function stuurMeetwaarden(gebruikersnaam, waarde) {
+//     var tijdstip = new Date();
+//     var userid = -1;
 
-    var connection = mysql.createConnection({
-        host: 'localhost',
-        user: 'api',
-        password: 'Kappa1234!',
-        database: 'meterkast'
-    });
+//     var connection = mysql.createConnection({
+//         host: 'localhost',
+//         user: 'api',
+//         password: 'Kappa1234!',
+//         database: 'meterkast'
+//     });
 
-    connection.connect(function (err) {
-        if (err) {
-            console.log('error connecting: ' + err.stack);
-            return;
-        }
-    });
+//     connection.connect(function (err) {
+//         if (err) {
+//             console.log('error connecting: ' + err.stack);
+//             return;
+//         }
+//     });
 
-    var usernamequery = 'SELECT id FROM gebruiker WHERE gebruikersnaam = ?';
-    connection.query(usernamequery, [gebruikersnaam], function (err, results, fields) {
-        if (err) {
-            console.log(err);
-            return;
-        }
-        userid = results[0].id;
+//     var usernamequery = 'SELECT id FROM gebruiker WHERE gebruikersnaam = ?';
+//     connection.query(usernamequery, [gebruikersnaam], function (err, results, fields) {
+//         if (err) {
+//             console.log(err);
+//             return;
+//         }
+//         userid = results[0].id;
 
-        var addquery = 'INSERT INTO meetwaarden(gebruikersid, waarde, tijdstip) VALUES(?,?,?)';
-        connection.query(addquery, [userid, waarde, tijdstip], function (err, results, fields) {
-            if (err) {
-                console.log(err);
-                return;
-            }
+//         var addquery = 'INSERT INTO meetwaarden(gebruikersid, waarde, tijdstip) VALUES(?,?,?)';
+//         connection.query(addquery, [userid, waarde, tijdstip], function (err, results, fields) {
+//             if (err) {
+//                 console.log(err);
+//                 return;
+//             }
 
-        });
-        connection.end(function (err) {
-        });
-    });
-}
-
-
-
-// Restfull login
-router.post('/login', function (req, res) {
-
-    var username = req.body.gebruikersnaam || '';
-    var password = req.body.wachtwoord || '';
-
-    var loginName = '';
-    var loginPass = '';
-
-    // Check for empy body
-    if (username === '' || password === '') {
-        res.status(401);
-        res.json({
-            'status': 401,
-            'message': 'Unknown USER, bye'
-        });
-        return;
-    }
-
-    var connection = mysql.createConnection({
-        host: 'localhost',
-        user: 'api',
-        password: 'Kappa1234!',
-        database: 'meterkast'
-    });
-
-    connection.connect(function (err) {
-        if (err) {
-            console.log('error connecting: ' + err.stack);
-            return;
-        }
-    });
-    var query = 'SELECT * FROM gebruiker WHERE gebruikersnaam = ? AND wachtwoord = ?';
-    connection.query(query, [username, password], function (err, results, fields) {
-        if (err) {
-            console.log(err);
-            return;
-        }
-        if (results.length > 0) {
-            loginName = results[0].gebruikersnaam;
-            loginPass = results[0].wachtwoord;
-        }
-
-        // Check for valid user/passwd combo
-        if ((username === loginName) && (password === loginPass)) {
-            var token = jwt.encode({
-                iss: username
-            }, req.app.get('secretkey'));
-
-            res.status(200);
-            res.json({
-                token: token,
-                user: username
-            });
-        }
-        else {
-            res.status(401);
-            res.json({
-                'status': 401,
-                'message': 'Unknown user, bye'
-            });
-        }
-    });
-    connection.end(function (err) {
-    });
-});
-
-router.post('/getData', function (req, res) {
-    var type = req.body.type || '';
-    var count = req.body.count || '';
-    var acceptedTypes = ['day', 'hour'];
-    var accepted = false;
-    var data = [];
+//         });
+//         connection.end(function (err) {
+//         });
+//     });
+// }
 
 
-    //Check for empty body
-    if (type === '' || count === '') {
-        res.status(401);
-        res.json({
-            'status': 401,
-            'message': 'POST body contains at least one empty field'
-        });
-        return;
-    }
 
-    //Check type body with accepted types
-    for (var i = 0; i < acceptedTypes.length; i++) {
-        if (type.match(acceptedTypes[i])) {
-            accepted = true;
-        }
-    }
-    //Respond if unaccepted
-    if (!accepted) {
-        res.status(403);
-        res.json({
-            'status': 403,
-            'message': 'POST body contains forbidden type',
-            'allowed types': acceptedTypes
-        });
-        return;
-    }
+// // Restfull login
+// router.post('/login', function (req, res) {
 
-    var connection = mysql.createConnection({
-        host: 'localhost',
-        user: 'api',
-        password: 'Kappa1234!',
-        database: 'meterkast',
-        timezone: '+00:00'
-    });
+//     var username = req.body.gebruikersnaam || '';
+//     var password = req.body.wachtwoord || '';
 
-    connection.connect(function (err) {
-        if (err) {
-            console.log('error connecting: ' + err.stack);
-            return;
-        }
-    });
+//     var loginName = '';
+//     var loginPass = '';
 
-    //Fetch data for all 3 users
-    for (var idx = 1; idx < 4; idx++) {
-        (function (index) {
-            var query = '';
-            switch (type) {
-                case 'hour':
-                    query = "SELECT waarde,DATE_FORMAT(tijdstip, '%Y-%m-%d %H:%i') as tijdstip FROM meetwaarden WHERE tijdstip >= date_sub(now(),interval ? hour) AND gebruikersid = ?";
-                    break;
-                case 'day':
-                    query = "SELECT waarde,DATE_FORMAT(tijdstip, '%Y-%m-%d %H:%i') as tijdstip FROM meetwaarden WHERE tijdstip >= date_sub(now(),interval ? day) AND gebruikersid = ?";
-                    break;
-            }
-            connection.query(query, [count, index], function (err, results, fields) {
-                if (err) {
-                    console.log(err);
-                    return;
-                }
+//     // Check for empy body
+//     if (username === '' || password === '') {
+//         res.status(401);
+//         res.json({
+//             'status': 401,
+//             'message': 'Unknown USER, bye'
+//         });
+//         return;
+//     }
 
-                var dataObject = {
-                    userId: index,
-                    results: results
-                };
-                data.push(dataObject);
+//     var connection = mysql.createConnection({
+//         host: 'localhost',
+//         user: 'api',
+//         password: 'Kappa1234!',
+//         database: 'meterkast'
+//     });
 
-                //respond if all users are queried
-                if (index === 3) {
-                    res.status(200);
-                    res.json({
-                        status: 200,
-                        data: data
-                    });
-                }
-            });
-        })(idx);
-    }
-    connection.end(function (err) {
-    });
-});
+//     connection.connect(function (err) {
+//         if (err) {
+//             console.log('error connecting: ' + err.stack);
+//             return;
+//         }
+//     });
+//     var query = 'SELECT * FROM gebruiker WHERE gebruikersnaam = ? AND wachtwoord = ?';
+//     connection.query(query, [username, password], function (err, results, fields) {
+//         if (err) {
+//             console.log(err);
+//             return;
+//         }
+//         if (results.length > 0) {
+//             loginName = results[0].gebruikersnaam;
+//             loginPass = results[0].wachtwoord;
+//         }
 
-router.post('/getData/:id', function (req, res) {
-    var id = req.params.id;
-    var type = req.body.type || '';
-    var count = req.body.count || '';
-    var acceptedTypes = ['day', 'hour'];
-    var accepted = false;
+//         // Check for valid user/passwd combo
+//         if ((username === loginName) && (password === loginPass)) {
+//             var token = jwt.encode({
+//                 iss: username
+//             }, req.app.get('secretkey'));
 
-    //Check for empty body
-    if (type === '' || count === '') {
-        res.status(401);
-        res.json({
-            'status': 401,
-            'message': 'POST body contains at least one empty field'
-        });
-        return;
-    }
+//             res.status(200);
+//             res.json({
+//                 token: token,
+//                 user: username
+//             });
+//         }
+//         else {
+//             res.status(401);
+//             res.json({
+//                 'status': 401,
+//                 'message': 'Unknown user, bye'
+//             });
+//         }
+//     });
+//     connection.end(function (err) {
+//     });
+// });
 
-    //Check type body with accepted types
-    for (var i = 0; i < acceptedTypes.length; i++) {
-        if (type.match(acceptedTypes[i])) {
-            accepted = true;
-        }
-    }
-    //Respond if unaccepted
-    if (!accepted) {
-        res.status(403);
-        res.json({
-            'status': 403,
-            'message': 'POST body contains forbidden type',
-            'allowed types': acceptedTypes
-        });
-        return;
-    }
+// router.post('/getData', function (req, res) {
+//     var type = req.body.type || '';
+//     var count = req.body.count || '';
+//     var acceptedTypes = ['day', 'hour'];
+//     var accepted = false;
+//     var data = [];
 
-    var connection = mysql.createConnection({
-        host: 'localhost',
-        user: 'api',
-        password: 'Kappa1234!',
-        database: 'meterkast',
-        timezone: '+00:00'
-    });
 
-    connection.connect(function (err) {
-        if (err) {
-            console.log('error connecting: ' + err.stack);
-            return;
-        }
-    });
+//     //Check for empty body
+//     if (type === '' || count === '') {
+//         res.status(401);
+//         res.json({
+//             'status': 401,
+//             'message': 'POST body contains at least one empty field'
+//         });
+//         return;
+//     }
 
-    //Fetch data for userid entered in param
-    var query = '';
-    switch (type) {
-        case 'hour':
-            query = "SELECT waarde,DATE_FORMAT(tijdstip, '%Y-%m-%d %H:%i') as tijdstip FROM meetwaarden WHERE tijdstip >= date_sub(now(),interval ? hour) AND gebruikersid = ?";
-            break;
-        case 'day':
-            query = "SELECT waarde,DATE_FORMAT(tijdstip, '%Y-%m-%d %H:%i') as tijdstip FROM meetwaarden WHERE tijdstip >= date_sub(now(),interval ? day) AND gebruikersid = ?";
-            break;
-    }
-    connection.query(query, [count, id], function (err, results, fields) {
-        if (err) {
-            console.log(err);
-            return;
-        }
+//     //Check type body with accepted types
+//     for (var i = 0; i < acceptedTypes.length; i++) {
+//         if (type.match(acceptedTypes[i])) {
+//             accepted = true;
+//         }
+//     }
+//     //Respond if unaccepted
+//     if (!accepted) {
+//         res.status(403);
+//         res.json({
+//             'status': 403,
+//             'message': 'POST body contains forbidden type',
+//             'allowed types': acceptedTypes
+//         });
+//         return;
+//     }
 
-        if (results.length > 0) {
-            //respond if result is available
-            res.status(200);
-            res.json({
-                'status': 200,
-                'data': { 'userId': id, 'results': results }
-            });
-        } else {
-            res.status(404);
-            res.json({
-                'status': 404,
-                'message': 'No results found'
-            });
-        }
-    });
-    connection.end(function (err) {
-    });
-});
+//     var connection = mysql.createConnection({
+//         host: 'localhost',
+//         user: 'api',
+//         password: 'Kappa1234!',
+//         database: 'meterkast',
+//         timezone: '+00:00'
+//     });
 
-router.get('/addPulse', function (req, res) {
-    res.status(200);
-    var username = req.app.get('userid');
+//     connection.connect(function (err) {
+//         if (err) {
+//             console.log('error connecting: ' + err.stack);
+//             return;
+//         }
+//     });
 
-    for (var idx = 0; idx < pulsen.length; idx++) {
-        if (pulsen[idx].gebruikersnaam === username) {
-            pulsen[idx].pulsen += 1;
-            res.json({
-                'status': 200,
-                'message': 'Pulse succesvol toegevoegd!'
-            });
-        }
-    }
-});
+//     //Fetch data for all 3 users
+//     for (var idx = 1; idx < 4; idx++) {
+//         (function (index) {
+//             var query = '';
+//             switch (type) {
+//                 case 'hour':
+//                     query = "SELECT waarde,DATE_FORMAT(tijdstip, '%Y-%m-%d %H:%i') as tijdstip FROM meetwaarden WHERE tijdstip >= date_sub(now(),interval ? hour) AND gebruikersid = ?";
+//                     break;
+//                 case 'day':
+//                     query = "SELECT waarde,DATE_FORMAT(tijdstip, '%Y-%m-%d %H:%i') as tijdstip FROM meetwaarden WHERE tijdstip >= date_sub(now(),interval ? day) AND gebruikersid = ?";
+//                     break;
+//             }
+//             connection.query(query, [count, index], function (err, results, fields) {
+//                 if (err) {
+//                     console.log(err);
+//                     return;
+//                 }
 
-router.get('/', function (req, res) {
-    res.status(200);
-    res.json({
-        'description': 'Meterkast API version 1'
-    });
-});
+//                 var dataObject = {
+//                     userId: index,
+//                     results: results
+//                 };
+//                 data.push(dataObject);
 
-module.exports = router;
+//                 //respond if all users are queried
+//                 if (index === 3) {
+//                     res.status(200);
+//                     res.json({
+//                         status: 200,
+//                         data: data
+//                     });
+//                 }
+//             });
+//         })(idx);
+//     }
+//     connection.end(function (err) {
+//     });
+// });
+
+// router.post('/getData/:id', function (req, res) {
+//     var id = req.params.id;
+//     var type = req.body.type || '';
+//     var count = req.body.count || '';
+//     var acceptedTypes = ['day', 'hour'];
+//     var accepted = false;
+
+//     //Check for empty body
+//     if (type === '' || count === '') {
+//         res.status(401);
+//         res.json({
+//             'status': 401,
+//             'message': 'POST body contains at least one empty field'
+//         });
+//         return;
+//     }
+
+//     //Check type body with accepted types
+//     for (var i = 0; i < acceptedTypes.length; i++) {
+//         if (type.match(acceptedTypes[i])) {
+//             accepted = true;
+//         }
+//     }
+//     //Respond if unaccepted
+//     if (!accepted) {
+//         res.status(403);
+//         res.json({
+//             'status': 403,
+//             'message': 'POST body contains forbidden type',
+//             'allowed types': acceptedTypes
+//         });
+//         return;
+//     }
+
+//     var connection = mysql.createConnection({
+//         host: 'localhost',
+//         user: 'api',
+//         password: 'Kappa1234!',
+//         database: 'meterkast',
+//         timezone: '+00:00'
+//     });
+
+//     connection.connect(function (err) {
+//         if (err) {
+//             console.log('error connecting: ' + err.stack);
+//             return;
+//         }
+//     });
+
+//     //Fetch data for userid entered in param
+//     var query = '';
+//     switch (type) {
+//         case 'hour':
+//             query = "SELECT waarde,DATE_FORMAT(tijdstip, '%Y-%m-%d %H:%i') as tijdstip FROM meetwaarden WHERE tijdstip >= date_sub(now(),interval ? hour) AND gebruikersid = ?";
+//             break;
+//         case 'day':
+//             query = "SELECT waarde,DATE_FORMAT(tijdstip, '%Y-%m-%d %H:%i') as tijdstip FROM meetwaarden WHERE tijdstip >= date_sub(now(),interval ? day) AND gebruikersid = ?";
+//             break;
+//     }
+//     connection.query(query, [count, id], function (err, results, fields) {
+//         if (err) {
+//             console.log(err);
+//             return;
+//         }
+
+//         if (results.length > 0) {
+//             //respond if result is available
+//             res.status(200);
+//             res.json({
+//                 'status': 200,
+//                 'data': { 'userId': id, 'results': results }
+//             });
+//         } else {
+//             res.status(404);
+//             res.json({
+//                 'status': 404,
+//                 'message': 'No results found'
+//             });
+//         }
+//     });
+//     connection.end(function (err) {
+//     });
+// });
+
+// router.get('/addPulse', function (req, res) {
+//     res.status(200);
+//     var username = req.app.get('userid');
+
+//     for (var idx = 0; idx < pulsen.length; idx++) {
+//         if (pulsen[idx].gebruikersnaam === username) {
+//             pulsen[idx].pulsen += 1;
+//             res.json({
+//                 'status': 200,
+//                 'message': 'Pulse succesvol toegevoegd!'
+//             });
+//         }
+//     }
+// });
+
+// router.get('/', function (req, res) {
+//     res.status(200);
+//     res.json({
+//         'description': 'Meterkast API version 1'
+//     });
+// });
+
+// module.exports = router;
