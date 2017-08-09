@@ -3,19 +3,22 @@ var router = express.Router();
 var jwt = require('jwt-simple');
 var mysql = require('mysql');
 var bcrypt = require('bcrypt');
+var config = require('./config.json');
+
+var pool = mysql.createPool(config.dbInfo);
+
 
 // General mysql connect funtion
-function connectToDb(req) {
-    var config = req.app.get('config');
-    var connection = mysql.createConnection(config.dbInfo);
-    connection.connect(function (err) {
-        if (err) {
-            console.log(err);
-            return;
-        }
-    });
-    return connection;
-}
+// function connectToDb(req) {
+//     var connection = mysql.createConnection(config.dbInfo);
+//     connection.connect(function (err) {
+//         if (err) {
+//             console.log(err);
+//             return;
+//         }
+//     });
+//     return connection;
+// }
 
 // Body: {username: '',password: ''}
 router.post('/createAccount', function (req, res) {
@@ -28,12 +31,11 @@ router.post('/createAccount', function (req, res) {
         return;
     }
     // Hash password to be saved in database
-    var connection = connectToDb(req);
-    bcrypt.hash(password, req.app.get('config').saltRounds, function (err, passwordHash) {
+    bcrypt.hash(password, config.saltRounds, function (err, passwordHash) {
         // Insert name and hashed password into pending table when username is available
         var query = 'INSERT INTO pending (username, password) SELECT * FROM (SELECT ?,?) as tmp '
             + 'WHERE NOT EXISTS (SELECT username FROM pending WHERE username = ? UNION SELECT username from users WHERE username = ?)';
-        connection.query(query, [username, passwordHash, username, username], function (err, results) {
+        pool.query(query, [username, passwordHash, username, username], function (err, results) {
             if (err) {
                 console.log(err);
                 res.status(500);
@@ -48,7 +50,6 @@ router.post('/createAccount', function (req, res) {
                 res.json('Account name already exists');
             }
         });
-        connection.end();
     });
 });
 
@@ -62,9 +63,8 @@ router.post('/login', function (req, res) {
         res.json({ error: 'username and or password is/are empty or missing!' });
         return;
     }
-    var connection = connectToDb(req);
     var query = 'SELECT * FROM users WHERE username = ?';
-    connection.query(query, [username], function (err, results) {
+    pool.query(query, [username], function (err, results) {
         if (err) {
             res.status(500);
             res.json('An error occured');
@@ -80,7 +80,7 @@ router.post('/login', function (req, res) {
                     var token = jwt.encode({
                         'iss': username,
                         'usr': userRights
-                    }, req.app.get('config').jwtKey);
+                    }, config.jwtKey);
                     res.status(200);
                     res.json({ 'token': token });
                 } else {
@@ -93,7 +93,6 @@ router.post('/login', function (req, res) {
             res.json('User not found');
         }
     });
-    connection.end();
 });
 
 // Check on all api calls past this one for a valid jwt token
@@ -102,17 +101,16 @@ router.all('*', function (req, res, next) {
     var adminRoutes = ['/updatePending', '/test'];
     var adminLevel = 2;
 
-    var connection = connectToDb(req);
     var token = (req.header('Acces-token') || '');
     if (token) {
         try {
-            var decoded = jwt.decode(token, req.app.get('config').jwtKey);
+            var decoded = jwt.decode(token, config.jwtKey);
             // TODO: Add token exp check etc.. as well
             // Check if jwt iss exists in database
             decodedIss = decoded.iss;
 
             var query = 'SELECT * FROM users WHERE username = ?';
-            connection.query(query, [decodedIss], function (err, results) {
+            pool.query(query, [decodedIss], function (err, results) {
                 if (err) {
                     res.status(500);
                     res.json('An error occured');
@@ -147,7 +145,6 @@ router.all('*', function (req, res, next) {
         res.status(400);
         res.send('No token supplied for the Acces-token header');
     }
-    connection.end();
 });
 
 // {username: 'string' ,"accepted": 'boolean', "userRights": "int"}
@@ -156,65 +153,62 @@ router.put('/updatePending', function (req, res) {
     var accepted = req.body.accepted;
     var userRights = req.body.userRights;
     // Check if accepted && username is defined.
-    if (!accepted || !username) {
+    if (accepted === '' || accepted === undefined || !username) {
         res.status(400);
         res.json({ error: 'accepted and/or username is/are empty or missing. userRights: (1-2) is also required when accepted = true' });
         return;
     }
     // Check if requested username exists in database
-    var connec = connectToDb(req);
-    var _query = 'SELECT * FROM pending where username = ?';
-    connec.query(_query, [username], function (err, results) {
-        // If no usernames are found, exit.
-        if (results.length < 1) {
-            res.status(400);
-            res.json("Entered pending username doesn't exist");
-            return;
-        }
-        // If accepted is true, check for userRights key
-        if (accepted) {
-            if (!userRights) {
+    pool.getConnection(function (err, connection) {
+        var _query = 'SELECT * FROM pending where username = ?';
+        connection.query(_query, [username], function (err, results) {
+            // If no usernames are found, exit.
+            if (results.length < 1) {
                 res.status(400);
-                res.json({ error: 'userRights is empty or missing. userRights: (1-2) is required for accepted = true' });
+                res.json("Entered pending username doesn't exist");
                 return;
             }
-            // check userRights for accepted values
-            if (userRights >= 1 && userRights <= 2) {
-                var connection = connectToDb(req);
-                var query = 'INSERT INTO users(username, password, userRights) VALUES ((SELECT username FROM pending WHERE username = ?),(SELECT password FROM pending WHERE username = ?),?);'
-                    + 'DELETE FROM pending WHERE username = ?;';
-                connection.query(query, [username, username, userRights, username], function (err) {
+            // If accepted is true, check for userRights key
+            if (accepted) {
+                if (!userRights) {
+                    res.status(400);
+                    res.json({ error: 'userRights is empty or missing. userRights: (1-2) is required for accepted = true' });
+                    return;
+                }
+                // check userRights for accepted values
+                if (userRights >= 1 && userRights <= 2) {
+                    var query = 'INSERT INTO users(username, password, userRights) VALUES ((SELECT username FROM pending WHERE username = ?),(SELECT password FROM pending WHERE username = ?),?);'
+                        + 'DELETE FROM pending WHERE username = ?;';
+                    connection.query(query, [username, username, userRights, username], function (err) {
+                        if (err) {
+                            res.status(500);
+                            res.json('An error occured' + err);
+                            return;
+                        }
+                        res.status(200);
+                        res.json('Pending updated to user succesfully');
+                    });
+                } else {
+                    res.status(400);
+                    res.json('invalid userRights value. Accepted values are 1 and 2.');
+                    return;
+                }
+            } else {
+                // Accepted is false so userRights are not required. Delete user from pending table.
+                var query2 = 'DELETE FROM pending WHERE username = ?';
+                connection.query(query2, [username], function (err) {
                     if (err) {
                         res.status(500);
-                        res.json('An error occured' + err);
+                        res.json('An error occured');
                         return;
                     }
                     res.status(200);
-                    res.json('Pending updated to user succesfully');
+                    res.json('Pending user deleted succesfully');
                 });
-                connection.end();
-            } else {
-                res.status(400);
-                res.json('invalid userRights value. Accepted values are 1 and 2.');
-                return;
             }
-        } else {
-            // Accepted is false so userRights are not required. Delete user from pending table.
-            var connection2 = connectToDb(req);
-            var query2 = 'DELETE FROM pending WHERE username = ?';
-            connection2.query(query2, [username], function (err) {
-                if (err) {
-                    res.status(500);
-                    res.json('An error occured');
-                    return;
-                }
-                res.status(200);
-                res.json('Pending user deleted succesfully');
-            });
-            connection2.end();
-        }
+        });
+        connection.release();
     });
-    connec.end();
 });
 
 // Body: {username: 'string',newPassword: 'string', newUserRights: number}
@@ -238,7 +232,6 @@ router.put('/updateUser', function (req, res) {
         res.status(400).json({ error: 'newUserRights value is not permitted. Allowed values are 1-2' });
         return;
     }
-    var connection = connectToDb(req);
     var query;
     var queryValues;
     if (deleted) {
@@ -247,18 +240,18 @@ router.put('/updateUser', function (req, res) {
     }
     else if (newPassword && newUserRights) {
         query = 'UPDATE users SET password = ?, userRights = ? WHERE username = ?';
-        var hash = bcrypt.hashSync(newPassword, req.app.get('config').saltRounds);
+        var hash = bcrypt.hashSync(newPassword, config.saltRounds);
         queryValues = [hash, newUserRights, username];
     } else if (newPassword) {
         query = 'UPDATE users SET password = ? WHERE username = ?';
-        var hash2 = bcrypt.hashSync(newPassword, req.app.get('config').saltRounds);
+        var hash2 = bcrypt.hashSync(newPassword, config.saltRounds);
         queryValues = [hash2, username];
     } else if (newUserRights) {
         query = 'UPDATE users SET userRights = ? WHERE username = ?';
         queryValues = [newUserRights, username];
     }
 
-    connection.query(query, queryValues, function (err, results) {
+    pool.query(query, queryValues, function (err, results) {
         if (err) {
             res.status(500);
             res.json('An error occured');
@@ -271,7 +264,6 @@ router.put('/updateUser', function (req, res) {
             res.status(200).json('User updated succesfully');
         }
     });
-    connection.end();
 });
 
 module.exports = router;

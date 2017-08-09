@@ -12,6 +12,7 @@ var compression = require('compression');
 var app = express();
 
 var config = require('./config.json');
+// Not really needed anymore since a simple var config at the top is easier
 app.set('config', config);
 
 app.use(bodyParser.urlencoded({ extended: true }));
