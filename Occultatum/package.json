@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/Jeroen96/Project-Novus#readme",
   "dependencies": {
-    "bcrypt": "^1.0.2",
+    "bcrypt": "1.0.2",
     "body-parser": "^1.17.1",
     "compression": "^1.7.0",
     "cors": "^2.8.3",

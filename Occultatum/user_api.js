@@ -98,7 +98,7 @@ router.post('/login', function (req, res) {
 // Check on all api calls past this one for a valid jwt token
 router.all('*', function (req, res, next) {
     // Array of all routes that require admin rights
-    var adminRoutes = ['/updatePending', '/test'];
+    var adminRoutes = ['/updatePending', '/updateUser'];
     var adminLevel = 2;
 
     var token = (req.header('Acces-token') || '');
