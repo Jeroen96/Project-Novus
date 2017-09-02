@@ -32,9 +32,6 @@ This NodeJS project makes use of the following packages.
     "password": "SomethingSafe"
 }
 ```
-* Returns status 201 upon succesful account creation
-* Returns status 409 upon duplicate username
-
 ### Logging in [POST]
 * `username: string ` [required]
 * `password: string ` [required]
@@ -44,9 +41,7 @@ This NodeJS project makes use of the following packages.
     "password": "SomethingSafe"
 }
 ```
-* Returns status 401 when invalid password is entered
-* Returns 404 when user is not found
-* Returns following upon success:
+Returns following upon success:
 ```json
 {
     "token": tokenobject
@@ -77,15 +72,15 @@ Used to update pending users to full users or admins.
 Used to update users. Admins can delete users, change passwords and/or userRights.
 
 * `username: string ` [required]
-* `delete: boolean ` [required]
+* `delete: boolean ` [required if true]
 * `newPassword: string ` [required when delete: false] 
-* `newUserRights: number ` [required when delete: false]
+* `newUserRights: number ` [required when delete: false] 1 for user, 2 for admin
 
-When delete: true, newPassword and newUserRights are not required. When delete: false or simply not added newPassword AND/OR newUserRights are required.
+When delete: true, newPassword and newUserRights are not required. When delete: false or simply not added, newPassword AND/OR newUserRights are required.
 ```json
 {
     "username": "Bob" ,
-    "accepted": true,
-    "userRights": 1
+    "newPassword": "SomethingSafer",
+    "newUserRights": 2
 }
 
