@@ -3,8 +3,7 @@ var http = require('http');
 var https = require('https');
 var fs = require('fs');
 var userApi = require('./user_api');
-var mkApi = require('./mk_api');
-var webApi = require('./web_api');
+var sensorApi = require('./sensor_api');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var helmet = require('helmet');
@@ -46,8 +45,7 @@ function wwwRedirect(req, res, next) {
 };
 
 app.use('/userApi', userApi);
-// app.use('/mkApi', mkApi);
-app.use('/api', webApi);
+app.use('/sensorApi', sensorApi);
 
 app.get('/info', function (req, res) {
     res.send('Welcome to jberk.nl. This domain is used to host a Node.JS® REST api and Angular site');

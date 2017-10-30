@@ -4,23 +4,11 @@ var jwt = require('jwt-simple');
 var mysql = require('mysql');
 var bcrypt = require('bcrypt');
 var config = require('./config.json');
+var webApi = require('./web_api');
 
+var app = express();
 var pool = mysql.createPool(config.dbInfo);
 
-
-// General mysql connect funtion
-// function connectToDb(req) {
-//     var connection = mysql.createConnection(config.dbInfo);
-//     connection.connect(function (err) {
-//         if (err) {
-//             console.log(err);
-//             return;
-//         }
-//     });
-//     return connection;
-// }
-
-// Body: {username: '',password: ''}
 router.post('/createAccount', function (req, res) {
     var username = req.body.username;
     var password = req.body.password;
@@ -53,7 +41,6 @@ router.post('/createAccount', function (req, res) {
     });
 });
 
-// Body {username: '', password: ''}
 router.post('/login', function (req, res) {
     var username = req.body.username;
     var password = req.body.password;
@@ -79,6 +66,7 @@ router.post('/login', function (req, res) {
                 if (result) {
                     var token = jwt.encode({
                         'iss': username,
+                        'exp': Math.floor(Date.now() / 1000 + (config.expTime * 60)),
                         'usr': userRights
                     }, config.jwtKey);
                     res.status(200);
@@ -105,10 +93,8 @@ router.all('*', function (req, res, next) {
     if (token) {
         try {
             var decoded = jwt.decode(token, config.jwtKey);
-            // TODO: Add token exp check etc.. as well
+            var decodedIss = decoded.iss;
             // Check if jwt iss exists in database
-            decodedIss = decoded.iss;
-
             var query = 'SELECT * FROM users WHERE username = ?';
             pool.query(query, [decodedIss], function (err, results) {
                 if (err) {
@@ -120,10 +106,10 @@ router.all('*', function (req, res, next) {
                 if (results.length > 0) {
                     req.app.set('iss', decodedIss);
                     req.app.set('usr', results[0].userRights);
-                    // Check if user tries to acces admin routes if it is no admin
+                    // Check if user tries to acces admin routes if it is no admin else next()
                     if (results[0].userRights < adminLevel) {
                         for (var i = 0; i < adminRoutes.length; i++) {
-                            // If path contains one of the admin routes break call to next()
+                            // If path contains one of the admin routes return error
                             if (req.path.includes(adminRoutes[i])) {
                                 res.status(403);
                                 res.json('requested path is forbidden');
@@ -147,7 +133,6 @@ router.all('*', function (req, res, next) {
     }
 });
 
-// {username: 'string' ,"accepted": 'boolean', "userRights": "int"}
 router.put('/updatePending', function (req, res) {
     var username = req.body.username;
     var accepted = req.body.accepted;
@@ -211,15 +196,14 @@ router.put('/updatePending', function (req, res) {
     });
 });
 
-// Body: {username: 'string',newPassword: 'string', newUserRights: number}
 router.put('/updateUser', function (req, res) {
     // At least on of the two 'new' keys is required. Both available is also possible.
     var username = req.body.username;
     var deleted = req.body.delete;
     var newPassword = req.body.newPassword;
     var newUserRights = req.body.newUserRights;
-    // Check is username is available and if at least one of the new keys is as well.
-    if (!username || (!newPassword && !newUserRights)) {
+    // Check is username is available and if at least one of the update keys is as well.
+    if (!username || (!newPassword && !newUserRights && !deleted )) {
         res.status(400);
         res.json({
             error: 'username and/or newPassword or newUserRights is/are empty or missing.'
@@ -228,7 +212,7 @@ router.put('/updateUser', function (req, res) {
         return;
     }
     //Check if newUserRights values are allowed
-    if (newUserRights < 1 || newUserRights > 2) {
+    if (!deleted && (newUserRights < 1 || newUserRights > 2)) {
         res.status(400).json({ error: 'newUserRights value is not permitted. Allowed values are 1-2' });
         return;
     }
