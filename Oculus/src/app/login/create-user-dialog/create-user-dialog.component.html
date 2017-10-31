@@ -1,0 +1,21 @@
+<body>
+  <md-card-title>Create account</md-card-title>
+  <p>When you create a account you will be placed in the pending user's queue. The administrator has to validate your application
+    before you can login.</p>
+  <div fxLayout="column">
+    <md-input-container>
+      <input #username mdInput placeholder="Username">
+    </md-input-container>
+    <md-input-container>
+      <input #passw mdInput type="password" placeholder="Password">
+    </md-input-container>
+    <md-input-container>
+      <input #passwRepeat mdInput type="password" placeholder="Repeat password" (keyup.enter)="sendRequest(username.value,passw.value,passwRepeat.value)">
+      <md-hint style="color: red;">{{errorMsg}}</md-hint>
+    </md-input-container>
+    <button md-raised-button color="accent" (click)="sendRequest(username.value,passw.value,passwRepeat.value)">
+      <md-icon>create</md-icon>
+      <label>Create</label>
+    </button>
+  </div>
+</body>

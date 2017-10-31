@@ -1,5 +1,5 @@
-import { WebApiService } from './../../web-api.service';
-import { MkApiService } from './../mk-api.service';
+import { NavbarService } from './../../navbar.service';
+import { ApiService } from './../../api.service';
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -44,21 +44,18 @@ export class UserComponent implements OnInit {
     }
   ];
 
-  constructor(private apiService: MkApiService, private webapi: WebApiService, private route: ActivatedRoute, private location: Location, private router: Router) { }
+  // tslint:disable-next-line:max-line-length
+  constructor(private api: ApiService, private nav: NavbarService, private route: ActivatedRoute, private location: Location, private router: Router) { }
 
   ngOnInit() {
-    // Route Guard
-    if (!this.apiService.getAccessToken()) {
-      this.router.navigate(['/em/login']);
-    }
-    this.webapi.updateRouteName('Energy-M User');
+    this.nav.setName('Energy-M User');
     // Get day data
-    this.route.params.switchMap((params: Params) => this.apiService.getDataSingle('day', 3, +params['id'])).subscribe(json => {
+    this.route.params.switchMap((params: Params) => this.api.getDataSingle('day', 3, +params['id'])).subscribe(json => {
       this.userId = json.data.userId;
       this.processDayData(json.data.results);
     });
     // Get hour data
-    this.route.params.switchMap((params: Params) => this.apiService.getDataSingle('hour', 1, +params['id'])).subscribe(json => {
+    this.route.params.switchMap((params: Params) => this.api.getDataSingle('hour', 1, +params['id'])).subscribe(json => {
       this.processHourData(json.data.results);
     });
   }

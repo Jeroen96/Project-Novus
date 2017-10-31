@@ -56,3 +56,9 @@ typings/
 
 # dotenv environment variables file
 .env
+
+# api config file
+config.json
+
+#node-dev config file
+.node-dev.json

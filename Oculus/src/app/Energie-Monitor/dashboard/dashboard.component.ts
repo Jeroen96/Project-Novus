@@ -1,6 +1,6 @@
-import { MkApiService } from './../mk-api.service';
+import { NavbarService } from './../../navbar.service';
+import { ApiService } from './../../api.service';
 import { Router } from '@angular/router';
-import { WebApiService } from './../../web-api.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -51,22 +51,18 @@ export class DashboardComponent implements OnInit {
     }
   ];
   togglePulse = false;
-  constructor(private webApi: WebApiService, private mkApi: MkApiService, private router: Router) { }
+  constructor(private api: ApiService, private nav: NavbarService, private router: Router) { }
 
   ngOnInit() {
-    // Route Guard
-    if (!this.mkApi.getAccessToken()) {
-      this.router.navigate(['/em/login']);
-    }
-    this.webApi.updateRouteName('Enery-M Dashboard');
-    this.mkApi.getData('hour', 1).subscribe(res => {
+    this.nav.setName('Enery-M Dashboard');
+    this.api.getData('hour', 1).subscribe(res => {
       this.procesData(res.data);
       this.clickPulseToggle(this.togglePulse);
     });
   }
 
   clickRefreshButton() {
-    this.mkApi.getData('hour', 1).subscribe(res => {
+    this.api.getData('hour', 1).subscribe(res => {
       this.procesData(res.data);
       setTimeout(() => this.clickPulseToggle(this.togglePulse), 50);
     });

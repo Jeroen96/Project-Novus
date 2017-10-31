@@ -1,0 +1,65 @@
+<div fxLayout="column" fxLayoutAlign=" center" class="container" fxHide.xs fxShow.gt-xs>
+  <div fxFlex="27%" style="padding:15px"></div>
+  <md-card class="card">
+    <md-icon color="primary" id="logo">vpn_key</md-icon>
+    <md-card-title class="title">Sign in</md-card-title>
+    <div>
+      <md-input-container>
+        <input #name1 mdInput placeholder="Username">
+      </md-input-container>
+    </div>
+    <md-input-container>
+      <input (keyup.enter)="onLoginButtonClick(name1.value.trim(),pass1.value)" #pass1 mdInput type="password"
+             placeholder="Password">
+      <md-hint style="color: red;">{{loginError}}</md-hint>
+    </md-input-container>
+    <div fxLayout="row" style="margin-top: 25px;">
+      <div fxFlex>
+        <button md-button [mdMenuTriggerFor]="menu" color="accent">More options</button>
+        <md-menu #menu>
+          <button md-menu-item (click)="openCreateDialog()">Create account</button>
+          <button md-menu-item (click)="openAboutDialog()">About</button>
+        </md-menu>
+      </div>
+      <div>
+        <button #loginButton md-raised-button color="accent"
+                (click)="onLoginButtonClick(name1.value.trim(),pass1.value)">
+          <md-icon>lock_open</md-icon>
+          <label><b>NEXT</b></label>
+        </button>
+      </div>
+    </div>
+  </md-card>
+  <div fxFlex="25%"></div>
+</div>
+<div fxShow.xs fxHide.gt-xs class="xsContainer" fxLayout.xs="column" fxLayoutAlign.xs>
+  <div class="xsCard">
+    <md-icon color="primary" id="logo">vpn_key</md-icon>
+    <md-card-title class="title">Sign in</md-card-title>
+    <div>
+      <md-input-container>
+        <input #name mdInput placeholder="Username">
+      </md-input-container>
+    </div>
+    <md-input-container>
+      <input (keyup.enter)="onLoginButtonClick(name.value.trim(),pass.value)" #pass mdInput type="password"
+             placeholder="Password">
+      <md-hint style="color: red;">{{loginError}}</md-hint>
+    </md-input-container>
+    <div fxLayout="row" style="margin-top: 25px;">
+      <div fxFlex>
+        <button md-button [mdMenuTriggerFor]="menu" color="accent">More options</button>
+        <md-menu #menu>
+          <button md-menu-item (click)="openCreateDialog()">Create account</button>
+          <button md-menu-item (click)="openAboutDialog()">About</button>
+        </md-menu>
+      </div>
+      <div>
+        <button #loginButton md-raised-button color="accent" (click)="onLoginButtonClick(name.value.trim(),pass.value)">
+          <md-icon>lock_open</md-icon>
+          <label><b>NEXT</b></label>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
