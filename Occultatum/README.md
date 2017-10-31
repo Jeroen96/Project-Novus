@@ -31,6 +31,7 @@ This NodeJS project makes use of the following packages.
     - ["jberk.nl/userApi/updateUser"](#update-user-put)
     - ["jberk.nl/userApi/createSensor"](#create-sensor-post)
     - ["jberk.nl/userApi/updateSensor"](#update-sensor-put)
+    - ["jberk.nl/userApi/getAllMembers"](#get-all-members-post)
 
 ### Creating an account [POST]
 
@@ -120,3 +121,17 @@ When delete: true, newPassword is not required. When delete: false or simply not
     "newPassword": "SomethingSafer"
 }
 ```
+### Get all members [POST]
+Used to get all members from the defined type.
+
+* `users: boolean `   [Optional]
+* `pending: boolean ` [Optional]
+* `sensors: boolean ` [Optional] 
+
+One of the above defined members is allowed
+```json
+{
+    "users": true
+}
+```
+Returns the resulting array with objects for each member

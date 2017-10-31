@@ -306,15 +306,59 @@ router.put('/updateSensor', function (req, res) {
 
     pool.query(query, queryValues, function (err, results) {
         if (err) {
+            console.log(err);
             res.status(500);
             res.json('An error occured');
             return;
         }
         if (results.affectedRows < 1) {
-            res.status(400).json('Updated user does not exist');
+            res.status(400).json('Updated sensor does not exist');
 
         } else {
-            res.status(200).json('User updated succesfully');
+            res.status(200).json('Sensor updated succesfully');
+        }
+    });
+});
+
+router.post('/getAllMembers', function (req, res) {
+    var users = req.body.users;
+    var pending = req.body.pending;
+    var sensors = req.body.sensors;
+
+    // Check if only one member type is defined
+    if (Object.keys(req.body).length > 1) {
+        res.status(400);
+        res.json('More than one member type defined. Only one is allowed!');
+        return;
+    }
+    if (!users && !pending && !sensors) {
+        res.status(400);
+        res.json('Invalid member type or valid member type is false');
+        return;
+    }
+
+    var query;
+    if (users) {
+        query = 'SELECT username,userRights FROM users';
+    } else if (pending) {
+        query = 'SELECT username FROM pending';
+    } else if (sensors) {
+        query = 'SELECT username FROM sensors';
+    }
+
+    pool.query(query, function (err, results) {
+        if (err) {
+            console.log(err);
+            res.status(500);
+            res.json('An error occured');
+            return;
+        }
+        if (results.length > 0) {
+            res.status(200);
+            res.json(results);
+        } else {
+            res.status(404);
+            res.json('No members found');
         }
     });
 });
