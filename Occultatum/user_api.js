@@ -4,9 +4,6 @@ var jwt = require('jwt-simple');
 var mysql = require('mysql');
 var bcrypt = require('bcrypt');
 var config = require('./config.json');
-var webApi = require('./web_api');
-
-var app = express();
 var pool = mysql.createPool(config.dbInfo);
 
 router.post('/createAccount', function (req, res) {
@@ -86,7 +83,7 @@ router.post('/login', function (req, res) {
 // Check on all api calls past this one for a valid jwt token
 router.all('*', function (req, res, next) {
     // Array of all routes that require admin rights
-    var adminRoutes = ['/updatePending', '/updateUser'];
+    var adminRoutes = ['/updatePending', '/updateUser', '/createSensor', '/updateSensor'];
     var adminLevel = 2;
 
     var token = (req.header('Acces-token') || '');
@@ -112,7 +109,7 @@ router.all('*', function (req, res, next) {
                             // If path contains one of the admin routes return error
                             if (req.path.includes(adminRoutes[i])) {
                                 res.status(403);
-                                res.json('requested path is forbidden');
+                                res.json('Requested path is forbidden');
                                 return;
                             }
                         }
@@ -175,7 +172,7 @@ router.put('/updatePending', function (req, res) {
                     });
                 } else {
                     res.status(400);
-                    res.json('invalid userRights value. Accepted values are 1 and 2.');
+                    res.json('Invalid userRights value. Accepted values are 1 and 2.');
                     return;
                 }
             } else {
@@ -203,7 +200,7 @@ router.put('/updateUser', function (req, res) {
     var newPassword = req.body.newPassword;
     var newUserRights = req.body.newUserRights;
     // Check is username is available and if at least one of the update keys is as well.
-    if (!username || (!newPassword && !newUserRights && !deleted )) {
+    if (!username || (!newPassword && !newUserRights && !deleted)) {
         res.status(400);
         res.json({
             error: 'username and/or newPassword or newUserRights is/are empty or missing.'
@@ -233,6 +230,78 @@ router.put('/updateUser', function (req, res) {
     } else if (newUserRights) {
         query = 'UPDATE users SET userRights = ? WHERE username = ?';
         queryValues = [newUserRights, username];
+    }
+
+    pool.query(query, queryValues, function (err, results) {
+        if (err) {
+            res.status(500);
+            res.json('An error occured');
+            return;
+        }
+        if (results.affectedRows < 1) {
+            res.status(400).json('Updated user does not exist');
+
+        } else {
+            res.status(200).json('User updated succesfully');
+        }
+    });
+});
+
+router.post('/createSensor', function (req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+    // Check if username and password are both available
+    if (!username || !password) {
+        res.status(400);
+        res.json({ error: 'username and or password is/are empty or missing!' });
+        return;
+    }
+    // Hash password to be saved in database
+    bcrypt.hash(password, config.saltRounds, function (err, passwordHash) {
+        // Insert name and hashed password into sensors table
+        var query = 'INSERT INTO sensors (username, password) SELECT * FROM (SELECT ?,?) as tmp '
+            + 'WHERE NOT EXISTS (SELECT username FROM sensors WHERE username = ?)';
+        pool.query(query, [username, passwordHash, username], function (err, results) {
+            if (err) {
+                console.log(err);
+                res.status(500);
+                res.json('An error occured');
+                return;
+            }
+            if (results.affectedRows > 0) {
+                res.status(201);
+                res.json('Sensor created');
+            } else {
+                res.status(409);
+                res.json('Sensor name already exists');
+            }
+        });
+    });
+});
+
+router.put('/updateSensor', function (req, res) {
+    // At least on of the update keys is required. Both available is also possible.
+    var username = req.body.username;
+    var deleted = req.body.delete;
+    var newPassword = req.body.newPassword;
+    // Check is username is available and if at least one of the update keys is as well.
+    if (!username || (!newPassword && !deleted)) {
+        res.status(400);
+        res.json({
+            error: 'username or newPassword or delete is/are empty or missing.'
+        });
+        return;
+    }
+    var query;
+    var queryValues;
+    if (deleted) {
+        query = 'DELETE FROM sensors WHERE username = ?';
+        queryValues = [username];
+    }
+    else if (newPassword) {
+        query = 'UPDATE sensors SET password = ? WHERE username = ?';
+        var hash = bcrypt.hashSync(newPassword, config.saltRounds);
+        queryValues = [hash, username];
     }
 
     pool.query(query, queryValues, function (err, results) {

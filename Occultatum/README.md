@@ -22,6 +22,16 @@ This NodeJS project makes use of the following packages.
 [cors]: https://www.npmjs.com/package/cors
 
 # Usage of user_api requests
+### Request examples
+- Calls which don't require login
+    - ["jberk.nl/userApi/createAccount"](#creating-an-account-post)
+    - ["jberk.nl/userApi/login"](#logging-in-post)
+- Calls which require login and admin rights
+    - ["jberk.nl/userApi/updatePending"](#update-pending-put)
+    - ["jberk.nl/userApi/updateUser"](#update-user-put)
+    - ["jberk.nl/userApi/createSensor"](#create-sensor-post)
+    - ["jberk.nl/userApi/updateSensor"](#update-sensor-put)
+
 ### Creating an account [POST]
 
 * `username: string ` [required]
@@ -83,4 +93,31 @@ When delete: true, newPassword and newUserRights are not required. When delete: 
     "newPassword": "SomethingSafer",
     "newUserRights": 2
 }
+```
+### Create sensor [POST]
+Used to create sensors. 
+* `username: string ` [required]
+* `password: string ` [required]
 
+```json
+{
+    "username": "Wemos_Outside" ,
+    "password": "SomethingSafe"
+}
+```
+### Update sensor [PUT]
+Used to update users. Admins can delete users, change passwords and/or userRights.
+
+* `username: string ` [required]
+* `delete: boolean ` [required if true]
+* `newPassword: string ` [required when delete: false] 
+* `newUserRights: number ` [required when delete: false] 1 for user, 2 for admin
+
+When delete: true, newPassword and newUserRights are not required. When delete: false or simply not added, newPassword AND/OR newUserRights are required.
+```json
+{
+    "username": "Bob" ,
+    "newPassword": "SomethingSafer",
+    "newUserRights": 2
+}
+```
