@@ -60,6 +60,7 @@ Returns following upon success:
 tokenobject example
 {
     "iss": "Bob",
+    "exp": 1509460495,
     "usr": 1
 }
 ```
@@ -106,18 +107,16 @@ Used to create sensors.
 }
 ```
 ### Update sensor [PUT]
-Used to update users. Admins can delete users, change passwords and/or userRights.
+Used to update sensors. Admins can delete sensors or change passwords.
 
 * `username: string ` [required]
 * `delete: boolean ` [required if true]
 * `newPassword: string ` [required when delete: false] 
-* `newUserRights: number ` [required when delete: false] 1 for user, 2 for admin
 
-When delete: true, newPassword and newUserRights are not required. When delete: false or simply not added, newPassword AND/OR newUserRights are required.
+When delete: true, newPassword is not required. When delete: false or simply not added, newPassword is required.
 ```json
 {
-    "username": "Bob" ,
-    "newPassword": "SomethingSafer",
-    "newUserRights": 2
+    "username": "Wemos_Outside" ,
+    "newPassword": "SomethingSafer"
 }
 ```
