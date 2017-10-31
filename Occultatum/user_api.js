@@ -6,9 +6,28 @@ var bcrypt = require('bcrypt');
 var config = require('./config.json');
 var pool = mysql.createPool(config.dbInfo);
 
+// Function to check if specified types match
+function checkTypes(dataArray, typeArray) {
+    for (i = 0; i < dataArray.length; i++) {
+        if (dataArray[i] && typeof dataArray[i] !== typeArray[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 router.post('/createAccount', function (req, res) {
     var username = req.body.username;
     var password = req.body.password;
+    var data = [username, password];
+    var types = ['string', 'string'];
+
+    if (!checkTypes(data, types)) {
+        res.status(400);
+        res.json('Request contains invalid type(s)');
+        return;
+    }
+
     // Check if username and password are both available
     if (!username || !password) {
         res.status(400);
@@ -41,6 +60,15 @@ router.post('/createAccount', function (req, res) {
 router.post('/login', function (req, res) {
     var username = req.body.username;
     var password = req.body.password;
+    var data = [username, password];
+    var types = ['string', 'string'];
+
+    if (!checkTypes(data, types)) {
+        res.status(400);
+        res.json('Request contains invalid type(s)');
+        return;
+    }
+
     // Check if username and password are both available
     if (!username || !password) {
         res.status(400);
@@ -134,6 +162,15 @@ router.put('/updatePending', function (req, res) {
     var username = req.body.username;
     var accepted = req.body.accepted;
     var userRights = req.body.userRights;
+    var data = [username, accepted, userRights];
+    var types = ['string', 'boolean', 'number'];
+
+    if (!checkTypes(data, types)) {
+        res.status(400);
+        res.json('Request contains invalid type(s)');
+        return;
+    }
+
     // Check if accepted && username is defined.
     if (accepted === '' || accepted === undefined || !username) {
         res.status(400);
@@ -199,6 +236,15 @@ router.put('/updateUser', function (req, res) {
     var deleted = req.body.delete;
     var newPassword = req.body.newPassword;
     var newUserRights = req.body.newUserRights;
+    var data = [username, deleted, newPassword, newUserRights];
+    var types = ['string', 'boolean', 'string', 'number'];
+
+    if (!checkTypes(data, types)) {
+        res.status(400);
+        res.json('Request contains invalid type(s)');
+        return;
+    }
+
     // Check is username is available and if at least one of the update keys is as well.
     if (!username || (!newPassword && !newUserRights && !deleted)) {
         res.status(400);
@@ -250,6 +296,15 @@ router.put('/updateUser', function (req, res) {
 router.post('/createSensor', function (req, res) {
     var username = req.body.username;
     var password = req.body.password;
+    var data = [username, password];
+    var types = ['string', 'string'];
+
+    if (!checkTypes(data, types)) {
+        res.status(400);
+        res.json('Request contains invalid type(s)');
+        return;
+    }
+
     // Check if username and password are both available
     if (!username || !password) {
         res.status(400);
@@ -284,6 +339,15 @@ router.put('/updateSensor', function (req, res) {
     var username = req.body.username;
     var deleted = req.body.delete;
     var newPassword = req.body.newPassword;
+    var data = [username, deleted, newPassword];
+    var types = ['string', 'boolean', 'string'];
+
+    if (!checkTypes(data, types)) {
+        res.status(400);
+        res.json('Request contains invalid type(s)');
+        return;
+    }
+
     // Check is username is available and if at least one of the update keys is as well.
     if (!username || (!newPassword && !deleted)) {
         res.status(400);
@@ -324,6 +388,14 @@ router.post('/getAllMembers', function (req, res) {
     var users = req.body.users;
     var pending = req.body.pending;
     var sensors = req.body.sensors;
+    var data = [users, pending, sensors];
+    var types = ['boolean', 'boolean', 'boolean'];
+
+    if (!checkTypes(data, types)) {
+        res.status(400);
+        res.json('Request contains invalid type(s)');
+        return;
+    }
 
     // Check if only one member type is defined
     if (Object.keys(req.body).length > 1) {
