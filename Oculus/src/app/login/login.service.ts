@@ -5,7 +5,7 @@ import { JwtHelper } from 'angular2-jwt';
 
 @Injectable()
 export class LoginService {
-  private apiUrl = 'https://treepi.dynu.net/api/';
+  private apiUrl = 'http://jberk.nl/userApi/';
   private headers = new Headers({ 'Content-Type': 'application/json' });
   private accessToken = '';
   private jwtHelper: JwtHelper = new JwtHelper();
@@ -16,23 +16,22 @@ export class LoginService {
 
   login(username: string, password: string) {
     const url = this.apiUrl + 'login';
-    return this.http.post(url, JSON.stringify({ 'gebruikersnaam': username, 'wachtwoord': password }), { headers: this.headers })
-      .map(res => res.json());
-  }
-
-  register(username: string, password: string) {
-    const url = this.apiUrl + 'register';
     return this.http.post(url, JSON.stringify({ 'username': username, 'password': password }), { headers: this.headers })
       .map(res => res.json());
   }
 
-  // Receive acces token, decode and set the token and userRight properties.
+  register(username: string, password: string) {
+    const url = this.apiUrl + 'createAccount';
+    return this.http.post(url, JSON.stringify({ 'username': username, 'password': password }), { headers: this.headers })
+      .map(res => res.json());
+  }
+
+  // Receive acces token, decode and set the token, username and userRight properties.
   setAccessToken(token: string) {
     this.accessToken = token;
-    // const decodedToken = this.jwtHelper.decodeToken(token);
-    // const splittedString: string[] = decodedToken.data.split(';', 2);
-    // this.userRights.next(Number(splittedString[1]));
-    // this.username = splittedString[0];
+    const decoded = this.jwtHelper.decodeToken(token);
+    this.username = decoded.iss;
+    this.userRights.next(decoded.usr);
   }
 
   checkAccessTokenAvailable() {

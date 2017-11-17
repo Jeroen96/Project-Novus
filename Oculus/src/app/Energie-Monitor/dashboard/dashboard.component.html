@@ -1,24 +1,24 @@
-<md-card>
-  <button md-raised-button color="primary" (click)="clickControlButton(1)">
-    <md-icon>perm_identity</md-icon>
+<mat-card>
+  <button mat-raised-button color="primary" (click)="clickControlButton(1)">
+    <mat-icon>perm_identity</mat-icon>
     <label>Jeroen</label>
   </button>
-  <button md-raised-button color="primary" (click)="clickRefreshButton()" style="margin-top: 5px;">
-    <md-icon>refresh</md-icon>
+  <button mat-raised-button color="primary" (click)="clickRefreshButton()" style="margin-top: 5px;">
+    <mat-icon>refresh</mat-icon>
     <label>Refresh</label>
   </button>
   <div style="margin-top: 10px;">
-    <md-slide-toggle (click)="clickPulseToggle(!this.togglePulse)">
+    <mat-slide-toggle (click)="clickPulseToggle(!this.togglePulse)">
       show pulse(s)
-    </md-slide-toggle>
+    </mat-slide-toggle>
   </div>
-</md-card>
+</mat-card>
 
-<md-card style="margin: 10px;">
+<mat-card style="margin: 10px;">
   <div *ngIf="lineChartDataJer.length > 0" class="chart">
     <label *ngIf="!togglePulse">Jeroen power usage last hour (W/min) </label>
     <label *ngIf="togglePulse">Jeroen power usage last hour (pulse(s)/min) </label>
     <canvas baseChart [datasets]="lineChartDataJer" [labels]="lineChartLabelsJer" [options]="lineChartOptions" [legend]="lineChartLegend"
       [chartType]="lineChartType" [colors]="lineChartColors"></canvas>
   </div>
-</md-card>
+</mat-card>

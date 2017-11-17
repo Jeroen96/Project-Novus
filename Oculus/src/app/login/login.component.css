@@ -5,29 +5,26 @@
 .card{
     min-width: 400px;
     min-height: 450px;
+    padding: 40px;
 }
 
-md-card-title{
+mat-card-title{
     margin-bottom: 30px;
     font-family: "Roboto";
 }
 
-md-input-container{
+mat-input-container{
   width: 100%;
   font-family: "Roboto";
 }
 
-/*md-icon svg {*/
-    /*fill: inherit;*/
-/*}*/
-
 .xsContainer{
     height: 100vh;
-    /*background: white;*/
+    background: white;
 }
 
 .xsCard{
-    margin: 20px;
+    margin: 30px;
 }
 
 #logo{

@@ -1,0 +1,27 @@
+mat-card{
+    margin-bottom: 10px;
+  }
+  
+  #tab_content{
+    margin: 10px;
+  }
+  
+  #rowItem{
+    margin-left: 1em;
+  }
+  
+  #buttonLabel{
+    margin-left: 20px;
+  }
+  
+  .emptyContainer{
+    height: calc(100vh - 130px);
+    color: #E0E0E0;
+    font-size: 20px;
+  }
+  
+  .emptyIcon{
+      font-size:45px;
+      height:45px;
+      width: 45px;
+  }

@@ -6,9 +6,10 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MaterialModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { MaterialModule } from './material/material.module';
 import 'hammerjs';
+
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing/app-routing.module';
@@ -40,10 +41,10 @@ import { ControlPanelComponent } from './control-panel/control-panel.component';
     FormsModule,
     HttpModule,
     BrowserAnimationsModule,
-    MaterialModule,
     FlexLayoutModule,
     AppRoutingModule,
     ChartsModule,
+    MaterialModule
   ],
   providers: [ApiService, LoginService],
   bootstrap: [AppComponent],

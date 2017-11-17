@@ -14,3 +14,7 @@ label{
 button{
     margin-top: 25px;
 }
+
+mat-input-container{
+    width: 100%;
+}

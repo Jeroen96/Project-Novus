@@ -1,19 +1,19 @@
-<md-card>
+<mat-card>
   <div fxLayout="row" fxLayoutAlign="start center">
     <!--label + button block-->
     <div>
       <!--Username block-->
       <div fxLayout="row" fxLayoutAlign="start center">
         <div>
-          <md-card-title>User</md-card-title>
+          <mat-card-title>User</mat-card-title>
         </div>
         <div style="margin-left: 7px; margin-top:5px;">
-          <md-card-title *ngIf="userId == 1" style="font-size: 19px">Jeroen</md-card-title>
+          <mat-card-title *ngIf="userId == 1" style="font-size: 19px">Jeroen</mat-card-title>
         </div>
       </div>
       <!--button-->
-      <button md-raised-button (click)="clickBackButton()" color="primary">
-      <md-icon>keyboard_backspace</md-icon>
+      <button mat-raised-button (click)="clickBackButton()" color="primary">
+      <mat-icon>keyboard_backspace</mat-icon>
       <label>Back</label>
     </button>
     </div>
@@ -24,28 +24,28 @@
       <label>power costs last 24h: € {{costs24h}}</label>
     </div>
   </div>
-</md-card>
+</mat-card>
 
 
 
-<md-card class="chartCard">
+<mat-card class="chartCard">
   <div *ngIf="lineChartDataHour.length > 0" class="chart">
     <label>power usage of the last hour (W/min) </label>
     <canvas baseChart [datasets]="lineChartDataHour" [labels]="lineChartLabelsHour" [options]="lineChartOptions" [legend]="lineChartLegend"
       [chartType]="lineChartType" [colors]="lineChartColors"></canvas>
   </div>
-</md-card>
-<md-card class="chartCard">
+</mat-card>
+<mat-card class="chartCard">
   <div *ngIf="lineChartDataDay.length > 0" class="chart">
     <label>power usage of the last 3 days (kWh) </label>
     <canvas baseChart [datasets]="lineChartDataDay" [labels]="lineChartLabelsDay" [options]="lineChartOptions" [legend]="lineChartLegend"
       [chartType]="lineChartType" [colors]="lineChartColors"></canvas>
   </div>
-</md-card>
-<md-card class="chartCard">
+</mat-card>
+<mat-card class="chartCard">
   <div *ngIf="lineChartDataTrend.length > 0" class="chart">
     <label>Trend for the next 24 hours (kWh) </label>
     <canvas baseChart [datasets]="lineChartDataTrend" [labels]="lineChartLabelTrend" [options]="lineChartOptions" [legend]="lineChartLegend"
       [chartType]="lineChartType" [colors]="lineChartColors"></canvas>
   </div>
-</md-card>
+</mat-card>

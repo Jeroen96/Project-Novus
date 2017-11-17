@@ -1,43 +1,42 @@
 <!--sidenav menu-->
-<md-sidenav-container style="height: 100vh">
-  <md-sidenav #sidenav mode="push" class="app-sidenav" color="primary">
-    <md-nav-list>
+<mat-sidenav-container style="height: 100vh">
+  <mat-sidenav #sidenav mode="push" class="app-sidenav" color="primary">
+    <mat-nav-list>
       <!--'absorb' first button highlight-->
-      <a md-button style="height: 0; position: absolute;">
+      <a mat-button style="height: 0; position: absolute;">
       </a>
       <!--Home button-->
-      <a md-list-item class="navItem" routerLink="/home" routerLinkActive="active" (click)="sidenav.close()">
-        <md-icon>home</md-icon>
+      <a mat-list-item class="navItem" routerLink="/home" routerLinkActive="active" (click)="sidenav.close()">
+        <mat-icon>home</mat-icon>
         <label class="navDes">Home</label>
       </a>
       <!--Energie monitor button-->
-      <md-divider></md-divider>
-      <a md-list-item class="navItem" routerLink="/em" routerLinkActive="active" (click)="sidenav.close()">
-        <md-icon>lightbulb_outline</md-icon>
+      <mat-divider></mat-divider>
+      <a mat-list-item class="navItem" routerLink="/em" routerLinkActive="active" (click)="sidenav.close()">
+        <mat-icon>lightbulb_outline</mat-icon>
         <label class="navDes">Energy Monitor</label>
       </a>
       <!--Downloads button-->
-      <a md-list-item class="navItem" routerLink="/downloads" routerLinkActive="active" (click)="sidenav.close()">
-        <md-icon>file_download</md-icon>
+      <a mat-list-item class="navItem" routerLink="/downloads" routerLinkActive="active" (click)="sidenav.close()">
+        <mat-icon>file_download</mat-icon>
         <label class="navDes">Downloads</label>
       </a>
       <!--ControlPanel button-->
-      <a md-list-item class="navItem" routerLink="/controlPanel" routerLinkActive="active" (click)="sidenav.close()">
-        <md-icon>settings_applications</md-icon>
+      <a mat-list-item class="navItem" routerLink="/controlPanel" routerLinkActive="active" (click)="sidenav.close()">
+        <mat-icon>settings_applications</mat-icon>
         <label class="navDes">Control Panel</label>
-
       </a>
-    </md-nav-list>
-  </md-sidenav>
+    </mat-nav-list>
+  </mat-sidenav>
 
   <!--toolbar-->
   <div *ngIf="nav.visible">
-    <md-toolbar color="primary">
-      <button md-icon-button (click)="sidenav.toggle()">
-      <md-icon>menu</md-icon>
+    <mat-toolbar color="primary">
+      <button mat-icon-button (click)="sidenav.toggle()">
+      <mat-icon>menu</mat-icon>
     </button>
       <label class="navDes">{{route}}</label>
-    </md-toolbar>
+    </mat-toolbar>
   </div>
 
   <router-outlet></router-outlet>

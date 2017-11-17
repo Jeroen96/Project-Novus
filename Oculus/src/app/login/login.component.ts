@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ApiService } from './../api.service';
 import { LoginService } from './login.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MdDialog } from '@angular/material';
+import { MatDialog } from '@angular/material';
 
 @Component({
   selector: 'app-login',
@@ -15,12 +15,13 @@ import { MdDialog } from '@angular/material';
 export class LoginComponent implements OnInit, OnDestroy {
   public loginError;
   // tslint:disable-next-line:max-line-length
-  constructor(private loginService: LoginService, private api: ApiService, private router: Router, private dialog: MdDialog, private nav: NavbarService) { }
+  constructor(private loginService: LoginService, private api: ApiService, private router: Router, private dialog: MatDialog, private nav: NavbarService) { }
 
   onLoginButtonClick(name: string, password: string) {
     this.loginService.login(name, password).subscribe(response => {
       this.loginService.setAccessToken(response.token);
       this.api.setHeaders(response.token);
+      // TODO: Navigate to requested path instead of default location
       this.router.navigate(['/home']);
     },
       error => {

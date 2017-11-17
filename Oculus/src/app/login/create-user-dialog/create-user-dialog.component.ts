@@ -1,7 +1,7 @@
 import { LoginService } from './../login.service';
 import { ApiService } from './../../api.service';
 import { Component, OnInit } from '@angular/core';
-import { MdSnackBar, MdDialog, MdDialogRef } from '@angular/material';
+import { MatSnackBar, MatDialog, MatDialogRef } from '@angular/material';
 
 @Component({
   selector: 'app-create-user-dialog',
@@ -12,7 +12,7 @@ export class CreateUserDialogComponent implements OnInit {
   public errorMsg = '';
 
   // tslint:disable-next-line:max-line-length
-  constructor(public dialogRef: MdDialogRef<CreateUserDialogComponent>, private api: ApiService, private loginService: LoginService, private snackbar: MdSnackBar) { }
+  constructor(public dialogRef: MatDialogRef<CreateUserDialogComponent>, private api: ApiService, private loginService: LoginService, private snackbar: MatSnackBar) { }
 
   ngOnInit() {
   }

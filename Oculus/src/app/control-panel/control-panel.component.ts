@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
-import {MdDialog, MdDialogRef, MdSnackBar} from '@angular/material';
-import {ApiService} from '../api.service';
-import {NavbarService} from '../navbar.service';
-import {LoginService} from '../login/login.service';
+import { Component, OnInit } from '@angular/core';
+import { ApiService } from '../api.service';
+import { NavbarService } from '../navbar.service';
+import { LoginService } from '../login/login.service';
+import { MatDialog, MatSnackBar } from '@angular/material';
 
 @Component({
   selector: 'app-control-panel',
@@ -10,24 +10,41 @@ import {LoginService} from '../login/login.service';
   styleUrls: ['./control-panel.component.css']
 })
 export class ControlPanelComponent implements OnInit {
-  private userRights: number;
+  public userRights: number;
   rights = [
-    {userValue: 1, userReadValue: 'User'},
-    {userValue: 2, userReadValue: 'Admin'}
+    { userValue: 1, userReadValue: 'User' },
+    { userValue: 2, userReadValue: 'Admin' }
   ];
   users = [];
   admins = [];
   pending = [];
 
   // tslint:disable-next-line:max-line-length
-  constructor(private api: ApiService, private nav: NavbarService, private loginService: LoginService, private dialog: MdDialog, private snackbar: MdSnackBar) {
-    nav.setName('Control Panel');
+  constructor(private api: ApiService, private navBar: NavbarService, private loginApi: LoginService, private dialog: MatDialog, private snackbar: MatSnackBar) {
+    navBar.setName('Control Panel');
   }
 
   ngOnInit() {
-    this.loginService.userRights.subscribe((value) => this.userRights = value);
+    this.loginApi.userRights.subscribe((value) => this.userRights = value);
     this.refreshUsers();
 
+    // this.dialog.afterAllClosed.subscribe((response) => {
+    //   if (this.api.userUpdated) {
+    //     this.api.userUpdated = false;
+    //     this.refreshUsers();
+    //   }
+    // });
+  }
+
+  openEditUserDialog(userName) {
+    // const dialogRef = this.dialog.open(EditUserDialogComponent, { data: userName });
+  }
+
+  deleteUser(username) {
+    // this.api.deleteUser(username).subscribe((response) => {
+    //   this.showSnackbar('User deleted', 'ok', 2500);
+    //   this.refreshUsers();
+    // });
   }
 
   refreshUsers() {
@@ -48,7 +65,7 @@ export class ControlPanelComponent implements OnInit {
             break;
           case 2:
             // Remove logged in admin from user list
-            if (user.username !== this.loginService.username) {
+            if (user.username !== this.loginApi.username) {
               this.admins.push(user);
             }
             break;
@@ -57,16 +74,25 @@ export class ControlPanelComponent implements OnInit {
     });
   }
 
-  updateUser() {
-
+  acceptUser(username: string, role: number) {
+    if (role === undefined) {
+      this.showSnackbar('Please fill in a role', 'ok', 2500);
+      return;
+    }
+    // this.api.updatePendingUser(username, true, role).subscribe((response) => {
+    //   this.showSnackbar('User accepted', 'ok', 2500);
+    //   this.refreshUsers();
+    // });
   }
 
-  deleteUser() {
-
+  declineUser(username: string) {
+    // this.api.updatePendingUser(username, false, 0).subscribe((response) => {
+    //   this.showSnackbar('User declined', 'ok', 2500);
+    //   this.refreshUsers();
+    // });
   }
 
-  updatePassword() {
+  showSnackbar(message: string, action: string, duration: number) {
+    this.snackbar.open(message, action, { duration: duration });
   }
-
-
 }

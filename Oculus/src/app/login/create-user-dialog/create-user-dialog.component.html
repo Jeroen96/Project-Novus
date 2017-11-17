@@ -1,20 +1,20 @@
 <body>
-  <md-card-title>Create account</md-card-title>
+  <mat-card-title>Create account</mat-card-title>
   <p>When you create a account you will be placed in the pending user's queue. The administrator has to validate your application
     before you can login.</p>
   <div fxLayout="column">
-    <md-input-container>
-      <input #username mdInput placeholder="Username">
-    </md-input-container>
-    <md-input-container>
-      <input #passw mdInput type="password" placeholder="Password">
-    </md-input-container>
-    <md-input-container>
-      <input #passwRepeat mdInput type="password" placeholder="Repeat password" (keyup.enter)="sendRequest(username.value,passw.value,passwRepeat.value)">
-      <md-hint style="color: red;">{{errorMsg}}</md-hint>
-    </md-input-container>
-    <button md-raised-button color="accent" (click)="sendRequest(username.value,passw.value,passwRepeat.value)">
-      <md-icon>create</md-icon>
+    <mat-input-container>
+      <input #username matInput placeholder="Username">
+    </mat-input-container>
+    <mat-input-container>
+      <input #passw matInput type="password" placeholder="Password">
+    </mat-input-container>
+    <mat-input-container>
+      <input #passwRepeat matInput type="password" placeholder="Repeat password" (keyup.enter)="sendRequest(username.value,passw.value,passwRepeat.value)">
+      <mat-hint style="color: red;">{{errorMsg}}</mat-hint>
+    </mat-input-container>
+    <button mat-raised-button color="accent" (click)="sendRequest(username.value,passw.value,passwRepeat.value)">
+      <mat-icon>create</mat-icon>
       <label>Create</label>
     </button>
   </div>

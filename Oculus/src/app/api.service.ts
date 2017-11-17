@@ -6,7 +6,7 @@ import 'rxjs/Rx';
 
 @Injectable()
 export class ApiService {
-  private apiUrl = 'https://treepi.dynu.net/api/';
+  private userApiUrl = 'https://jberk.nl/userApi/';
   private tokenHeaders;
   public userUpdated: boolean;
 
@@ -18,19 +18,19 @@ export class ApiService {
   }
 
   getData(type: string, count: number) {
-    const url = this.apiUrl + 'getData';
+    const url = this.userApiUrl + 'getData';
     return this.http.post(url, JSON.stringify({ 'type': type, 'count': count }), { headers: this.tokenHeaders })
       .map(res => res.json());
   }
 
   getDataSingle(type: string, count: number, userId: number) {
-    const url = this.apiUrl + 'getData/' + userId;
+    const url = this.userApiUrl + 'getData/' + userId;
     return this.http.post(url, JSON.stringify({ 'type': type, 'count': count }), { headers: this.tokenHeaders })
       .map(res => res.json());
   }
 
   getAllUsers() {
-    const url = this.apiUrl + 'getData/';
+    const url = this.userApiUrl + 'getData/';
     return this.http.post(url, JSON.stringify({ 'type': 'type', 'count': 'count' }), { headers: this.tokenHeaders })
       .map(res => res.json());
   }
